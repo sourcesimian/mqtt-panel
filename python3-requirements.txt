@@ -1,0 +1,4 @@
+PyYAML
+paho-mqtt
+gevent
+gevent-websocket

@@ -1,0 +1,378 @@
+cache:
+  root: data/cache
+
+mqtt:
+  host: 10.0.0.5
+  port: 1883
+  client-id: mqtt-panel-dev
+  topic-prefix: dev/mqtt-panel
+
+http:
+  host: 0.0.0.0
+  port: 8080
+  max-connections: 10
+
+html:
+  theme:
+  - ./slate.css
+
+panels:
+  - name: alpha
+    title: Alpha
+    groups:
+    - light
+    - text
+    - switches
+    - doors
+    - buttons
+    - gauges
+
+  - name: bravo
+    title: Bravo
+    icon: business
+    groups:
+    - image
+    - select
+
+  - name: embedded
+    title: Embedded
+    groups:
+    - embedded
+
+  - name: test
+    title: Test
+    icon: rule
+    groups:
+    - manip
+
+
+groups:
+  - title: Embedded
+    widgets:
+    - title: YouTube
+      type: iframe
+      attr:
+        src: https://www.youtube.com/embed/dQw4w9WgXcQ
+        width: 480px
+        height: 315px
+        title: YouTube video player
+        allow: accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture
+        allowfullscreen: 
+
+  - title: Switches
+    widgets:
+    - title: FooBar Master
+      type: switch
+      publish: switch/foo
+      subscribe: switch/foo
+      off:
+        text: "AUTO"
+        payload: "OFF"
+        icon: light
+        color: '#40F0F0'
+      on:
+        text: "MANUAL"
+        payload: "ONN"
+        color: '#808080'
+      other:
+        text: "Other"
+        payload: "OTHER"
+        icon: help
+        color: '#F0F040'
+      qos: 1
+      cache: True
+
+    - title: BarFoo Slave
+      type: switch
+      publish: switch/bar
+      subscribe: switch/foo
+      off:
+        text: "No"
+        payload: "OFF"
+        color: '#F04040'
+      on:
+        text: "Yes"
+        payload: "ON"
+        color: '#40F000'
+      qos: 1
+      cache: True
+
+    - title: Fish
+      type: switch
+      publish: fish/foo
+      subscribe: fish/foo
+      off:
+        text: "MANUAL"
+        payload: "ON"
+        color: '#808080'
+      on:
+        text: "AUTO"
+        payload: "OFF"
+        icon: light
+        color: '#40F0F0'
+      qos: 1
+      cache: True
+
+    - title: Salomon Stairs
+      type: switch
+      publish: fish/bar
+      subscribe: fish/foo
+      off:
+        text: "No"
+        payload: "OFF"
+        color: '#F04040'
+      on:
+        text: "Yes"
+        payload: "ON"
+        color: '#40F000'
+      qos: 1
+      cache: True
+
+    - title: Chips
+      type: switch
+      publish: fish/bar
+      subscribe: fish/foo
+      off:
+        text: "No"
+        payload: "OFF"
+        color: '#F04040'
+      on:
+        text: "Yes"
+        payload: "ON"
+        color: '#40F000'
+      qos: 1
+      cache: True
+
+  - title: Buttons
+    widgets:
+    - title: Play
+      type: button
+      publish: button/audio
+      text: "Play"
+      payload: "PLAY"
+      icon: play_arrow
+      color: '#40F040'
+      qos: 1
+      cache: True
+
+    - title: Record
+      type: button
+      publish: button/audio
+      text: "Record"
+      payload: "RECORD"
+      icon: mic
+      color: '#F04040'
+      qos: 1
+      cache: True
+      confirm: "Do you want to record?"
+
+  - title: Gauges
+    widgets:
+    - title: Health
+      type: switch
+      publish: gauge/health
+      subscribe: gauge/health
+      poor:
+        text: "Poor"
+        payload: "10"
+      moderate:
+        text: "Moderate"
+        payload: "40"
+      good:
+        text: "Good"
+        payload: "60"
+      excellent:
+        text: "Excellent"
+        payload: "81"
+      qos: 1
+      cache: True
+
+    - title: Health
+      type: gauge
+      subscribe: gauge/health
+      icon: health_and_safety
+      min: 0
+      max: 100
+      range:
+        - start: 0
+          end: 20
+          text: Poor
+          color: "#F00000"
+          icon: warning
+        - start: 20
+          end: 50
+          text: Moderate
+          color: "#008000"
+        - start: 50
+          end: 80
+          text: Good
+          color: "#00C000"
+        - start: 80
+          end: 101
+          text: Excellent
+          color: "#00F000"
+
+
+  - title: Doors
+    widgets:
+    - title: Door State
+      type: switch
+      publish: door/state
+      subscribe: 
+      off:
+        text: "Closed"
+        payload: "CLOSED"
+        confirm: "Close door?"
+      on:
+        text: "Open"
+        payload: "OPEN"
+        confirm: "Open door?"
+      qos: 1
+      cache: True
+
+    - title: Door
+      type: light
+      subscribe: door/state
+      values:
+        - payload: OPEN
+          text: OPEN
+          color: "#F00000"
+          icon: lock_open
+        - payload: CLOSED
+          text: closed
+          color: "#008000"
+          icon: lock
+
+  - title: Light
+    widgets:
+    - title: Switch
+      type: switch
+      publish: light/state
+      subscribe: light/state 
+      off:
+        text: "Off"
+        payload: "false"
+      on:
+        text: "On"
+        payload: "true"
+      qos: 1
+      cache: True
+
+    - title: Light
+      type: light
+      subscribe: light/state
+      values:
+        - payload: "false"
+          text: OFF
+        - payload: "true"
+          text: ON
+          color: yellow
+  
+  - title: Image
+    widgets:
+    - title: Image Select
+      type: switch
+      publish: image
+      venice:
+        text: "Venice"
+        payload: "https://upload.wikimedia.org/wikipedia/commons/1/1d/License_Free_Photo_-_Creative_Commons_by_gnuckx_%2811645325224%29.jpg"
+      capetown:
+        text: "Cape Town"
+        payload: "https://upload.wikimedia.org/wikipedia/commons/d/dc/Table_Mountain_DanieVDM.jpg"
+      qos: 1
+      retain: True
+      cache: True
+
+    - title: Image
+      type: image
+      subscribe: image
+      height: 300px
+
+  - title: Text
+    widgets:
+    - title: Text Switch
+      type: switch
+      publish: text
+      on:
+        text: "Heavy"
+        payload: "A black hole"
+      off:
+        text: "Light"
+        payload: "The light of a star"
+      qos: 1
+      retain: True
+      cache: True
+
+    - title: Text Display
+      type: text
+      subscribe: text
+      color: "#c0c040"
+
+  - title: Select
+    widgets:
+    - title: Select Switch
+      type: switch
+      publish: select/state
+      on:
+        payload: "FRESH"
+        text: "FRESH"
+      off:
+        payload: "CLOSED"
+        text: "CLOSED"
+      qos: 1
+      retain: True
+      cache: True
+
+    - title: Select Input
+      type: select
+      publish: select/state
+      subscribe: select/set
+      values:
+      - payload: CLOSED
+        text: Close
+      - payload: FRESH
+        text: Fresh
+      - payload: FILTER
+        text: Filter
+      qos: 1
+      retain: True
+
+    - title: Dropdown Input
+      type: dropdown
+      publish: select/set
+      subscribe: select/state
+      values:
+      - payload: CLOSED
+        text: Close
+      - payload: FRESH
+        text: Fresh
+      - payload: FILTER
+        text: Filter
+      qos: 1
+      retain: True
+
+    - title: Select Set
+      type: text
+      subscribe: select/set
+      color: "#40c0c0"
+
+    - title: Select State
+      type: text
+      subscribe: select/state
+      color: "#c040c0"
+
+  - title: Manip
+    widgets:
+    - title: Manip
+      type: dropdown
+      publish: manip/set
+      subscribe: manip/state
+      values:
+      - payload: CLOSE
+        text: Close
+      - payload: MAIN
+        text: Main
+      - payload: DAM
+        text: Dam
+      qos: 1
+      retain: True

@@ -1,0 +1,16 @@
+{
+  "name": "MQTT Panel",
+  "short_name": "MQTT Panel",
+  "description":"Web panel app for MQTT",
+  "lang": "en",
+  "start_url": ".",
+  "scope": "/",
+  "icons": [
+    {"src":"favicon.ico","type":"image/x-icon","sizes":"16x16"},
+    {"src":"icon-192x192.png","type":"image/png","sizes":"192x192"}
+  ],
+  "background_color": "#3a3f44",
+  "theme_color": "#272b30",
+  "display": "standalone",
+  "orientation": "portrait"
+}
