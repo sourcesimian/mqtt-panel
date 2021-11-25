@@ -2,7 +2,7 @@ $('.panel').on('show', function(event) {
     $(this).addClass('panel-show');
 
     var widgetIds = $(this).find('.widget').map(function() {
-        return this.id;
+        return $(this).data('id');
     }).get();
 
     $('.app').trigger('register-widgets', [widgetIds]);

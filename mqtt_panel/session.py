@@ -6,10 +6,11 @@ import urllib.parse
 class Session(object):
     _cookie_path = '/'
     _cookie_secure = False
+    _cookie_ttl = 86400 * 365
 
     def __init__(self):
         self._authorized = False
-        self._cookie = None
+        self._session = None
 
     def from_cookie(self, cookie_str):
         if not cookie_str:
@@ -19,7 +20,7 @@ class Session(object):
         try:
             for key, morsel in cookie.items():
                 if key == 'session':
-                    self._cookie = json.loads(
+                    self._session = json.loads(
                         urllib.parse.unquote(morsel.value, errors="strict"))
                     break
         except (ValueError, json.decoder.JSONDecodeError):
@@ -28,20 +29,20 @@ class Session(object):
     @property
     def authorized(self):
         try:
-            if self._cookie['id'] != 'authed':
+            if self._session['id'] != 'authed':
                 return False
             return True
         except (KeyError, TypeError):
             pass
         return False
 
-    def login(self, user):
-        self._cookie = {
+    def login(self, user, password):
+        self._session = {
             'id': 'authed'
         }
 
     def logout(self):
-        self._cookie = None
+        self._session = None
 
     def as_cookie(self):
         if self.authorized:
@@ -51,19 +52,18 @@ class Session(object):
 
     def _session_cookie(self):
         session = http.cookies.Morsel()
-        value = json.dumps(self._cookie)
-        ttl = 86400 * 365
+        value = json.dumps(self._session)
 
         session.set('session', value, urllib.parse.quote(value))
-        session['expires'] = ttl
+        session['expires'] = self._cookie_ttl
         session['path'] = self._cookie_path
         # session['comment'] = 'foo'
-        session['max-age'] = ttl
+        session['max-age'] = self._cookie_ttl
         session['secure'] = self._cookie_secure
         # session['version'] = 2
         # session['samesite'] = 2
         # session['httponly'] = False
-        return session.output().split(': ', 1)
+        return session.output().split(': ', 1)[1]
 
     def _deleted_cookie(self):
         session = http.cookies.Morsel()
@@ -79,4 +79,4 @@ class Session(object):
         # session['version'] = 2
         # session['samesite'] = 2
         # session['httponly'] = False
-        return session.output().split(': ', 1)
+        return session.output().split(': ', 1)[1]

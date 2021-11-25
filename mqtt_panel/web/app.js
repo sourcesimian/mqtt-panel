@@ -1,10 +1,11 @@
 class App {
     constructor() {
-      this.appHash = '{self.hash}';
+      this.appHash = '{self.identity}';
       this.serverOnline = false;
       this.mqttOnline = false;
       this.currentWidgets = [];
       this.onfocus_timeout = null;
+      this._widget_id_prexix = 'w-';
 
       var This = this;
       this.titlebar = new TitleBar();
@@ -118,7 +119,19 @@ class App {
     }
 
     logout() {
-      window.location.href = 'logout';
+      fetch(
+        './api/logout',
+        {
+          method: 'POST',
+          credentials: 'same-origin',
+        }
+      )
+      .then(response => response.json())
+      .then(json => {
+        document.cookie = json['session'];
+        location.reload();
+      })
+      .catch( error => console.error('logout error:', error) );
     }
 
     on_message(blob_list) {
@@ -126,8 +139,8 @@ class App {
       var i;
       for (i in blob_list) {
         var blob = blob_list[i];
-        if (blob.id.startsWith('w-')) {
-          $('#' + blob.id).trigger("update", blob);
+        if (blob.id.startsWith(this._widget_id_prexix)) {
+          $('.' + blob.id).trigger("update", blob);
         }
         else if (blob.id == 'app') {
           this.update_app(blob);

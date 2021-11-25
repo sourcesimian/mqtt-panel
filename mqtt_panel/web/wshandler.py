@@ -3,6 +3,8 @@ import logging
 
 import geventwebsocket.exceptions
 
+from mqtt_panel.web.widget.widget import Widget
+
 
 class WSHandler(object):
     def __init__(self, service, session, ws, client_env):
@@ -28,7 +30,7 @@ class WSHandler(object):
                     id = blob['id']
                     if id == 'register':
                         self.register(blob['widgets'])
-                    elif id.startswith('w-'):
+                    elif id.startswith(Widget._id_prefix):
                         widget = self._service._widget_store.get_widget(id)
                         if not widget:
                             continue
@@ -60,7 +62,7 @@ class WSHandler(object):
 
         filtered_data = []
         for blob in data:
-            if blob['id'].startswith('w-'):
+            if blob['id'].startswith(Widget._id_prefix):
                 if blob['id'] in self._active_widgets:
                     filtered_data.append(blob)
             else:

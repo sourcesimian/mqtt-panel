@@ -29,11 +29,11 @@ class Panel(Component):
         self._panel_hash = self._hash
 
     @property
-    def hash(self):
+    def identity(self):
         md5 = hashlib.md5()
         md5.update(self._hash)
         for group in self._groups:
-            md5.update(group.hash)
+            md5.update(group.identity)
         return md5.hexdigest()
 
     @property

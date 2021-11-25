@@ -22,21 +22,18 @@ class Binding(object):
         self._app.add_menu('fullscreen', 'Fullscreen', 'fullscreen')
         self._app.add_menu('logout', 'Logout', 'logout')
 
-
     def _init_groups(self, groups):
         counter = itertools.count(1)
-        widget_store = WidgetStore()
+        widget_store = WidgetStore(self._mqtt, self._cache)
 
         for group_blob in groups:
             group = Group(group_blob)
             for widget_blob in group_blob['widgets']:
                 try:
-                    klass = Widget.klaas(widget_blob['type'])
-                    widget = klass(next(counter), widget_blob, self._mqtt, self._cache) 
+                    widget = widget_store.add_widget(widget_blob)
                     group.add_widget(widget)
-                    widget_store.add_widget(widget)
-                except KeyError:
-                    logging.error('Can\'t create widget "%s"', widget_blob['type'])
+                except KeyError as ex:
+                    logging.error('Can\'t create widget: %s %s: %s', ex.__class__.__name__, ex, widget_blob)
 
             self._groups[group.name] = group
 

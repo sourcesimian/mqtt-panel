@@ -44,6 +44,9 @@ panels:
     icon: rule
     groups:
     - manip
+    - light
+    - ref1
+    - ref2
 
 
 groups:
@@ -212,7 +215,6 @@ groups:
           text: Excellent
           color: "#00F000"
 
-
   - title: Doors
     widgets:
     - title: Door State
@@ -376,3 +378,25 @@ groups:
         text: Dam
       qos: 1
       retain: True
+
+  - title: Ref1
+    widgets:
+    - title: Ref SW1
+      ref: sw1
+      type: switch
+      publish: ref/1
+      subscribe: ref/1
+      off:
+        text: "No"
+        payload: "OFF"
+        color: '#F04040'
+      on:
+        text: "Yes"
+        payload: "ON"
+        color: '#40F000'
+      qos: 1
+      cache: True
+
+  - title: Ref2
+    widgets:
+    - ref: sw1

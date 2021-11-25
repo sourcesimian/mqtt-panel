@@ -2,20 +2,27 @@ import logging
 import time
 
 from mqtt_panel.web.webbase import WebBase
-from mqtt_panel.util import get_javascript
+from mqtt_panel.util import write_javascript
 
 
 class Widget(WebBase):
     widget_type = 'widget'
-    __id_prefix = 'w-'
+    _id_prefix = 'w-'
     _widgets = {}
 
     def __init__(self, index, blob, mqtt, cache):
         super(Widget, self).__init__(blob)
 
-        self.__index = index
+        try:
+            self.ref = blob['ref']
+        except KeyError:
+            self.ref = None
+
+        # self.__index = index
+        self.__id = self._id_prefix + str(index)
         self._mqtt = mqtt
         self._cache = cache
+
         self._on_update_widget = None
 
         if self._c.get('cache', False) is True:
@@ -31,11 +38,11 @@ class Widget(WebBase):
 
     @property
     def id(self):
-        return self.__id_prefix + str(self.__index)
+        return self.__id
 
-    @property
-    def index(self):
-        return self.__index
+    # @property
+    # def index(self):
+    #     return self.__index
 
     def set_update_widget(self, update_widget):
         self._on_update_widget = update_widget
@@ -56,8 +63,8 @@ class Widget(WebBase):
     def on_widget(self, blob):
         logging.warning('on_widget() not implemented for "%s": %s', self.widget_type, blob)
 
-    def _cache_key(self, item):
-        return 'widget/%s/%s' % (self.hash, item)
+    def _cache_key(self, key):
+        return 'widget/%s/%s' % (self.identity, key)
 
     def set_value(self, value):
         if value == self._value:
@@ -74,7 +81,7 @@ class Widget(WebBase):
 
     def html(self, fh):
         self._write_render(fh, '''\
-            <div id="{self.id}" class="widget widget-{self.widget_type}" data-id="{self.id}" data-mtime="" data-value="{self.value}">
+            <div class="widget {self.id} widget-{self.widget_type}" data-id="{self.id}" data-mtime="" data-value="{self.value}">
               <div class="widget-body">
                 <div class="widget-title">{self.title}</div>
             ''', locals())
@@ -106,12 +113,12 @@ class Widget(WebBase):
 
     @classmethod
     def script(cls, fh):
-        get_javascript(cls, fh)
+        write_javascript(cls, fh)
 
     @classmethod
     def scripts(cls, fh):
         for widget_type in sorted(cls._widgets):
-            get_javascript(cls._widgets[widget_type], fh)
+            write_javascript(cls._widgets[widget_type], fh)
 
     @classmethod
     def klaas(cls, type):

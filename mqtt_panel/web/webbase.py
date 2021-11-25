@@ -5,11 +5,13 @@ import re
 
 import textwrap
 
+from mqtt_panel.util import blob_hash
+
 
 class WebBase(object):
     def __init__(self, blob):
         self._c = blob
-        self.__hash = self._calc_hash(self._c)
+        self.__identity = blob_hash(self._c)
 
     @property
     def name(self):
@@ -23,15 +25,8 @@ class WebBase(object):
         return self._c['title']
 
     @property
-    def hash(self):
-        return self.__hash
-
-    @classmethod
-    def _calc_hash(cls, c):
-        md5 = hashlib.md5()
-        cfg = json.dumps(c, sort_keys=True)
-        md5.update(cfg.encode())
-        return md5.hexdigest()
+    def identity(self):
+        return self.__identity
 
     @classmethod
     def _write_dedent(cls, fh, _text, indent=0):

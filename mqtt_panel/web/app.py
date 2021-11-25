@@ -12,7 +12,7 @@ from mqtt_panel.web.wslink import WSLink
 from mqtt_panel.web.webbase import WebBase
 from mqtt_panel.web.panels import Panels
 from mqtt_panel.web.widget.widget import Widget
-from mqtt_panel.util import get_javascript
+from mqtt_panel.util import write_javascript, write_html
 
 
 class App(WebBase):
@@ -54,23 +54,16 @@ class App(WebBase):
               display: none;
             }
           </style>
-          <title>MQTT Panel - Login</title>
+          <title>MQTT Panel</title>
           </head>
           <body>
           ''')
 
         TitleBar()._body(fh)
 
+        write_html(self.__class__, fh, indent=0, context='login')
+        write_javascript(self.__class__, fh, indent=0, context='login')
         self._write_render(fh, '''\
-          <div class="login">
-            <div>
-              <h1>Login</h1>
-              <form action="./login" method="post">
-                <input type="hidden" id="user" name="user" value="user"><br><br>
-                <input type="submit" value="Login">
-              </form>
-            <div>
-          <div>
           </body>
           </html>
         ''')
@@ -105,40 +98,7 @@ class App(WebBase):
     def _write_head_meta(self, fh):
         # link = 'https://10.0.0.5/h/panel.home/'
         # <!-- <link rel="canonical" href="{link}"> -->
-        self._write_render(fh, '''\
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-          <link rel="manifest" href="manifest.json">
-          <meta name="theme-color" content="#272b30">
-
-          <meta name="application-name" content="MQTT Panel">
-          <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-          <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
-
-          <!-- Apple -->
-          <link rel="apple-touch-icon" type="image/png" sizes="192x192" href="ios-icon-192x192.png">
-          <meta name="apple-mobile-web-app-capable" content="yes">
-          <meta name="apple-mobile-web-app-title" content="MQTT Panel">
-          <meta name="apple-mobile-web-app-status-bar-style" content="black">
-          <meta name="apple-mobile-web-app-title" content="MQTT Panel">
-
-          <!--
-          <meta name="mobile-web-app-capable" content="yes">
-          <meta name="msapplication-navbutton-color" content="#333333">
-          <meta name="msapplication-starturl" content="/">
-          -->
-
-          <!-- jQuery Javascript -->
-          <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-
-          <!-- Icons -->
-          <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
-
-          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-          <link rel="stylesheet" href="theme.css">
-          <link rel="stylesheet" href="style.css">
-        ''', locals())
+        write_html(self.__class__, fh, indent=0, context='head')
 
     def _write_body(self, fh):
         for component in self._components:
@@ -165,4 +125,4 @@ class App(WebBase):
         ''')
 
     def _write_body_js(self, fh):
-        get_javascript(self.__class__, fh)
+        write_javascript(self.__class__, fh)

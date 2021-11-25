@@ -20,10 +20,10 @@ class Group(WebBase):
         self._widgets.append(widget)
 
     @property
-    def hash(self):
+    def identity(self):
         md5 = hashlib.md5()
         for widget in self._widgets:
-            md5.update(widget.hash)
+            md5.update(widget.identity)
         return md5.hexdigest()
 
     def open(self):

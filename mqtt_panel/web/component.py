@@ -1,5 +1,5 @@
 from mqtt_panel.web.webbase import WebBase
-from mqtt_panel.util import get_javascript
+from mqtt_panel.util import write_javascript
 
 
 class Component(WebBase):
@@ -18,4 +18,4 @@ class Component(WebBase):
             self._body(fh)
 
     def script(self, fh):
-        get_javascript(self.__class__, fh)
+        write_javascript(self.__class__, fh)

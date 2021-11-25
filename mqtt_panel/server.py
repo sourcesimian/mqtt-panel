@@ -50,13 +50,17 @@ class Server(object):
         session.from_cookie(env.get('HTTP_COOKIE', None))
 
         if path == ('',):
+            # Login
             if not session.authorized:
-                location = 'login'
-                start_response('302 Found', [
-                    ('Location', location),
+                start_response('200 OK', [
+                    ('Content-Type', 'text/html'),
+                    ('Content-Language', 'us-GB'),
                 ])
-                return [b'302 Found - Location: ' + location.encode()]
+                out = io.StringIO()
+                self._binding.login(out)
+                return [out.getvalue().encode()]
 
+            # App
             start_response('200 OK', [
                 ('Content-Type', 'text/html'),
                 ('Content-Language', 'us-GB'),
@@ -65,35 +69,32 @@ class Server(object):
             self._binding.app(out)
             return [out.getvalue().encode()]
 
-        if path == ('login',):
+        if path == ('api', 'login'):
+            content = env['wsgi.input'].read().decode()
             import urllib
-            query = urllib.parse.parse_qs(env['wsgi.input'].read().decode())
+            query = urllib.parse.parse_qs(content)
+
             if 'user' in query:
-                session.login(query['user'][0])
-                if session.authorized:
-                    location = '.'
-                    start_response('302 Found', [
-                        ('Location', location),
-                        (session.as_cookie()),
-                    ])
-                    return [b'302 Found - Location: ' + location.encode()]
-
+                session.login(query['user'][0], query['password'][0])
             start_response('200 OK', [
-                ('Content-Type', 'text/html'),
-                ('Content-Language', 'us-GB'),
+                ('Content-Type', 'application/json'),
+                ('Set-Cookie', session.as_cookie()),
             ])
-            out = io.StringIO()
-            self._binding.login(out)
-            return [out.getvalue().encode()]
+            ret = {
+                'session': session.as_cookie()
+            }
+            return [json.dumps(ret).encode()]
 
-        if path == ('logout',):
+        if path == ('api', 'logout'):
             session.logout()
-            location = '.'
-            start_response('302 Found', [
-                ('Location', location),
-                (session.as_cookie()),
+            start_response('200 OK', [
+                ('Content-Type', 'application/json'),
+                ('Set-Cookie', session.as_cookie()),
             ])
-            return [b'302 Found - Location: ' + location.encode()]
+            ret = {
+                'session': session.as_cookie()
+            }
+            return [json.dumps(ret).encode()]
 
         if path == ('ws',):
             if env.get('HTTP_UPGRADE', None) == 'websocket':
@@ -103,9 +104,9 @@ class Server(object):
                 start_response('400 Bad Request', [('Content-Type', 'text/html')])
                 return [b'<h1>Bad Request</h1>']
 
-        if path == ('health',):
-            start_response('200 OK', [('Content-Type', 'text/html')])
-            return [b"<b>Healthy</b>"]
+        if path == ('api', 'health',):
+            start_response('200 OK', [('Content-Type', 'application/json')])
+            return [json.dumps({'health': 'okay'}).encode()]
 
         if path == ('icon-192x192.png',):
             start_response('200 OK', [('Content-Type', 'image/png')])
@@ -123,7 +124,7 @@ class Server(object):
                 return [fh.read()]
 
         if path == ('manifest.json',):
-            start_response('200 OK', [('Content-Type', 'application/octet-stream')])
+            start_response('200 OK', [('Content-Type', 'application/json')])
             with open('./resources/manifest.json') as fh:
                 return [fh.read().encode()]
 
