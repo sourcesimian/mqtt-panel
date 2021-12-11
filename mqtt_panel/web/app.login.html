@@ -2,9 +2,15 @@
   <div>
     <h1>Login</h1>
     <form action="./api/login" method="post">
-      <input type="hidden" id="user" name="user" value="user"><br><br>
-      <input type="hidden" id="password" name="password" value="password"><br><br>
-      <input type="submit" value="Login">
+      <label class="input" for="username">Username:</label>
+      <input type="text" id="username" name="username"><br><br>
+      <label class="input" for="password">Password:</label>
+      <input type="password" id="password" name="password"><br><br>
+      <input type="submit" value="Sign In">
+      <div class="message"></div>
     </form>
   <div>
 <div>
+<div class="loading d-none">
+  <div class="spinner"></div>
+</div>

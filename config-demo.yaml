@@ -16,6 +16,11 @@ html:
   theme:
   - ./slate.css
 
+auth:
+  users:
+  - username: admin
+    password: admin
+
 panels:
   - name: alpha
     title: Alpha

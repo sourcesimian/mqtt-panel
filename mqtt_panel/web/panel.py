@@ -58,7 +58,7 @@ class Panel(Component):
             logging.error("Widget id %s not found", ex)
 
     def _body(self, fh):
-        fh.write(f'<div class="box panel panel-{self.name}" data-title="{self.title}">')
+        fh.write(f'<div class="panel box" data-title="{self.title}" data-id="panel-{self.name}">')
         fh.write('<div style="height:var(--titlebar-height)"><!-- pad for titlebar --></div>\n\n')
         for group in self._groups:
             group.html(fh)

@@ -2,4 +2,4 @@
 **/__pycache__/
 virtualenv/
 data
-
+.vscode/

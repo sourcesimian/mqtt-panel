@@ -39,6 +39,6 @@ class MenuBar {
 
     active(id) {
         $('.menubar-link').removeClass('active');
-        $('.menubar-link-' + id).addClass('active');
+        $('.menubar-link[data-id="' + id + '"]').addClass('active');
     }
 }

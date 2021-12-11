@@ -45,6 +45,10 @@ class Config(object):
         return self._d['http']
 
     @property
+    def auth(self):
+        return self._d['auth']
+
+    @property
     def html(self):
         return self._d.get('html', None) or {}
 

@@ -27,7 +27,7 @@ class MenuBar(Component):
         ''', locals(), indent=self._indent)
 
         for action in self._actions:
-            fh.write(f'    <li><a class="menubar-link menubar-link-{action.id}" data-id="{action.id}" href=""><span class="material-icons">{action.icon}</span> {action.name}</a></li>\n')
+            fh.write(f'    <li><a class="menubar-link" data-id="{action.id}"><span class="material-icons">{action.icon}</span> {action.name}</a></li>\n')
 
         self._write_render(fh, '''\
           </ul>

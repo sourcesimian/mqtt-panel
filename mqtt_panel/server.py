@@ -14,9 +14,10 @@ from mqtt_panel.session import Session
 
 
 class Server(object):
-    def __init__(self, binding, **config):
+    def __init__(self, binding, config, auth):
         self._server = None
         self._c = config
+        self._auth = auth
         self._binding = binding
 
     def open(self):
@@ -46,7 +47,7 @@ class Server(object):
     def _handle_request(self, env, start_response):
         path = tuple(env["PATH_INFO"].split('/'))[1:]
 
-        session = Session()
+        session = Session(self._auth)
         session.from_cookie(env.get('HTTP_COOKIE', None))
 
         if path == ('',):
@@ -74,14 +75,20 @@ class Server(object):
             import urllib
             query = urllib.parse.parse_qs(content)
 
-            if 'user' in query:
-                session.login(query['user'][0], query['password'][0])
+            success = False
+            message = "Login failed"
+            if 'username' in query:
+                success = session.login(query['username'][0], query['password'][0])
+                if success:
+                    message = "Login success"
             start_response('200 OK', [
                 ('Content-Type', 'application/json'),
                 ('Set-Cookie', session.as_cookie()),
             ])
             ret = {
-                'session': session.as_cookie()
+                'session': session.as_cookie(),
+                'success': success,
+                'message': message,
             }
             return [json.dumps(ret).encode()]
 

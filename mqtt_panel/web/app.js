@@ -5,7 +5,7 @@ class App {
       this.mqttOnline = false;
       this.currentWidgets = [];
       this.onfocus_timeout = null;
-      this._widget_id_prexix = 'w-';
+      this._widget_id_prefix = 'w-';
 
       var This = this;
       this.titlebar = new TitleBar();
@@ -57,6 +57,13 @@ class App {
         This.currentWidgets = widgets;
         This.on_register_widgets();
       });
+
+      $(".app").on("swipeleft", function(event){
+        This.on_swipeleft(event);
+      });
+      $(".app").on("swiperight", function(event){
+        This.on_swiperight(event);
+      });
     }
 
     on_blur() {
@@ -96,13 +103,17 @@ class App {
       this.on_online_change();
     }
 
+    show_panel(id) {
+      $('.panel[data-id="' + id + '"]').trigger('show');
+
+      this.menubar.active(id);
+      localStorage.setItem('panel', id);
+      this.titlebar.title($('.panel[data-id="' + id + '"]').data('title'));
+    }
+
     on_menubar(id) {
         if (id.startsWith('panel-')) {
-          $('.panel').trigger('hide');
-          $('.' + id).trigger('show');
-          this.menubar.active(id);
-          localStorage.setItem('panel', id);
-          this.titlebar.title($('.' + id).data('title'));
+          this.show_panel(id);
           return false;
         }
         else if (id == 'fullscreen') {
@@ -139,8 +150,8 @@ class App {
       var i;
       for (i in blob_list) {
         var blob = blob_list[i];
-        if (blob.id.startsWith(this._widget_id_prexix)) {
-          $('.' + blob.id).trigger("update", blob);
+        if (blob.id.startsWith(this._widget_id_prefix)) {
+          $('.widget[data-id="' + blob.id + '"]').trigger("update", blob);
         }
         else if (blob.id == 'app') {
           this.update_app(blob);
@@ -177,11 +188,15 @@ class App {
     }
 
     update_panel() {
-      var id = localStorage.getItem('panel');
-      if (!id) {
-        id = 'panel-{self._panels._panels[0].name}';
+      let panelIds = this.panel_ids();
+      let panelId = localStorage.getItem('panel');
+
+      let index = panelIds.indexOf(panelId);
+      if (index == -1) {
+        panelId = panelIds[0];
       }
-      this.on_menubar(id);
+
+      this.on_menubar(panelId);
     }
 
     on_online() {
@@ -237,13 +252,45 @@ class App {
             var mtime = $(this).data('mtime');
             var lastUpdate;
             if (! mtime){
-                lastUpdate = 'unknown';
+                lastUpdate = '-';
             } else {
                 lastUpdate = self.since(now, mtime);
             }
 
             $(this).find('.last-update').html(lastUpdate);
         });
+    }
+
+    panel_ids() {
+      return $('.panel').map(function() {
+        return $(this).data('id');
+      }).get();
+    }
+
+    move_panel(fn) {
+      let panelIds = this.panel_ids()
+      let currentId = $('.panel-show').data('id');
+      let index = panelIds.indexOf(currentId);
+      if (index == -1) {
+          return;
+      }
+      let newId = panelIds[fn(index)];
+      if (newId === undefined) {
+          return;
+      }
+      this.show_panel(newId);
+    }
+
+    on_swipeleft(event) {
+      this.move_panel(function(idx) {
+        return idx + 1;
+      });
+    }
+
+    on_swiperight(event) {
+      this.move_panel(function(idx) {
+        return idx - 1;
+      });
     }
   }
   app = new App();

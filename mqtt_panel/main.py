@@ -31,7 +31,7 @@ def cli():
 
     binding = mqtt_panel.binding.Binding(cache, mqtt, config.groups, config.panels, config.html)
 
-    server = mqtt_panel.server.Server(binding, **config.http)
+    server = mqtt_panel.server.Server(binding, config.http, config.auth)
 
     binding.open()
 

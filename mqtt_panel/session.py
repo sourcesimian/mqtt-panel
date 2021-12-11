@@ -8,8 +8,8 @@ class Session(object):
     _cookie_secure = False
     _cookie_ttl = 86400 * 365
 
-    def __init__(self):
-        self._authorized = False
+    def __init__(self, auth):
+        self._auth = auth
         self._session = None
 
     def from_cookie(self, cookie_str):
@@ -28,18 +28,33 @@ class Session(object):
 
     @property
     def authorized(self):
+        if not self._auth:
+            return True
         try:
-            if self._session['id'] != 'authed':
+            if self._session['id'] != 'VALID':
                 return False
             return True
         except (KeyError, TypeError):
             pass
         return False
 
-    def login(self, user, password):
-        self._session = {
-            'id': 'authed'
-        }
+    @property
+    def username(self):
+        try:
+            return self._session['username']
+        except KeyError:
+            return None
+
+    def login(self, username, password):
+        for blob in self._auth.get('users', []):
+            if blob.get('username', None) == username:
+                if password == blob.get('password', None):
+                    self._session = {
+                        'username': username,
+                        'id': 'VALID',
+                    }
+                    return True
+        return False
 
     def logout(self):
         self._session = None

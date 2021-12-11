@@ -81,7 +81,7 @@ class Widget(WebBase):
 
     def html(self, fh):
         self._write_render(fh, '''\
-            <div class="widget {self.id} widget-{self.widget_type}" data-id="{self.id}" data-mtime="" data-value="{self.value}">
+            <div class="widget widget-{self.widget_type}" data-id="{self.id}" data-mtime="" data-value="{self.value}">
               <div class="widget-body">
                 <div class="widget-title">{self.title}</div>
             ''', locals())
@@ -89,9 +89,8 @@ class Widget(WebBase):
         self._html(fh)
 
         self._write_render(fh, '''\
-                <div class="last-update">unknown</div>
+                <div class="last-update">-</div>
               </div>
-              <!-- <div class="widget-modal">Widget Modal</div> -->
             </div>
         ''')
 
