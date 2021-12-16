@@ -17,7 +17,7 @@ $(function() {
         var This = this;
 
         var send = function() {
-            $('.app').trigger('widget', {
+            $('#app').trigger('widget', {
                 id: $(This).data('id'),
             });
             $(This).data('pressed', true);

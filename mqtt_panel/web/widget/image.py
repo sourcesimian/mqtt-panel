@@ -6,10 +6,14 @@ class Image(Widget):
     widget_type = 'image'
     def __init__(self, *args, **kwargs):
         super(Image, self).__init__(*args, **kwargs)
-        self._url = ''
 
     def open(self):
-        self._mqtt.subscribe(self._c['subscribe'], self._on_mqtt)
+        value = self._c.get('src', None)
+        if value:
+            self.set_value(value)
+        subscribe = self._c.get('subscribe', None)
+        if subscribe:
+            self._mqtt.subscribe(subscribe, self._on_mqtt)
 
     def _on_mqtt(self, payload, timestamp):
         logging.debug("Image [%s] on_mqtt: %s", self.id, payload)

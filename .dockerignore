@@ -1,0 +1,5 @@
+.vscode/*
+data/
+*.egg-info/
+virtualenv/
+venv/

@@ -15,8 +15,8 @@ class Service(object):
     def _notify_all(self, blob):
         self.notify_all([blob])
 
-    def web_socket(self, session, ws, client_env):
-        wsh = WSHandler(self, session, ws, client_env)
+    def web_socket(self, session, ws, client_env, app_identity):
+        wsh = WSHandler(self, session, ws, client_env, app_identity)
         self._web_sockets[wsh.client_id] = wsh
 
         try:

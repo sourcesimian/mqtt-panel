@@ -20,7 +20,7 @@ class MenuBar(Component):
         author = meta['Author']
 
         self._write_render(fh, '''\
-        <div class="menubar-overlay">
+        <div class="menubar-overlay d-none">
         </div>
         <div class="menubar">
           <ul>

@@ -1,6 +1,7 @@
 import logging
 import collections
 
+from mqtt_panel.util import pad_string
 from mqtt_panel.web.widget.widget import Widget
 
 class Switch(Widget):
@@ -9,8 +10,8 @@ class Switch(Widget):
         super(Switch, self).__init__(*args, **kwargs)
 
         self._value_map = {}
-        for key in self._iter_state_keys():
-            self._value_map[self._c[key]['payload']] = key
+        for idx, blob in enumerate(self._c['values']):
+            self._value_map[blob['payload']] = idx
 
     def open(self):
         topic = self._c.get('subscribe', None)
@@ -26,14 +27,14 @@ class Switch(Widget):
         try:
             value = self._value_map[payload]
         except KeyError as ex:
-            logging.error('Bad MQTT value: %s', payload)
+            logging.warning('Unexpected MQTT value: %s', payload)
             value = None
         self.set_value(value)
 
     def on_widget(self, blob):
         logging.debug("{%s} Rx widget: %s", self.id, blob)
 
-        payload = self._c[blob['value']]['payload']
+        payload = self._c['values'][blob['value']]['payload']
         self._mqtt.publish(self._c['publish'], payload,
                            retain=self._c.get('retain', False), qos=self._c.get('qos', 1))
 
@@ -44,54 +45,39 @@ class Switch(Widget):
             'value': self.value
         }
 
-    def _iter_state_keys(self):
-        for key in self._c:
-            if isinstance(self._c[key], dict):
-                if 'payload' in self._c[key]:
-                    if key == 'null':
-                        logging.warning('Ignoring Switch state "null"')
-                        continue
-                    yield key
-
     def _iter_states(self):
-        default_icon = {
-            'on': 'toggle_on',
-            'off': 'toggle_off',
-        }
-        default_color = {
-            'on': '#52D017',
-            'off': "black",
-        }
 
-        keys = list(self._iter_state_keys())
+        max_text_len = 0
+        for blob in self._c['values']:
+            text = blob.get('text', '')
+            max_text_len = max(max_text_len, len(text))
 
-        for i, key in enumerate(keys):
-            payload = self._c[key]['payload']
+        for idx, blob in enumerate(self._c['values']):
+            payload = blob['payload']
+            text = blob.get('text', payload)
+            text_padded = pad_string(text, max_text_len, '&nbsp;')
+            next_idx = idx + 1
             try:
-                next_state = keys[i + 1]
+                 self._c['values'][next_idx]
             except IndexError:
-                next_state = keys[0]
+                next_idx = 0
             state = State(
-                key,
-                self._c[key].get('text', payload),
-                self._c[key].get('icon', default_icon.get(key, 'help_center')),
-                self._c[key].get('color', default_color.get(key, None)),
-                self._c[key].get('confirm', None),
-                self._c[key].get('next', next_state),
+                idx,
+                text_padded,
+                blob.get('icon', Default.icon(text, payload)),
+                blob.get('color', Default.color(text, payload)),
+                blob.get('confirm', None),
+                next_idx,
             )
             yield state
 
-        try:
-            next_state = self._c.get('default', keys[0])
-        except IndexError:
-            next_state = 'null'
         none_state = State(
             'null',
             'unknown',
             'do_not_disturb',
             None,
             None,
-            next_state,
+            0,
         )
         yield none_state
 
@@ -125,7 +111,29 @@ class Switch(Widget):
             </div>
         ''', locals(), indent=4)
 
+class Default(object):
+    _map = {
+        ('on', 'true'): ('toggle_on', '#52D017'),
+        ('off', 'false'): ('toggle_off','black'),
+        None: ('help_center', None) 
+    }
+    @classmethod
+    def _lookup(cls, *keys):
+        for key in keys:
+            key = key.lower()
+            for map in cls._map.keys():
+                if map and key in map:
+                    return cls._map[map]
+        return cls._map[None]
+    @classmethod
+    def icon(cls, *key):
+        return cls._lookup(*key)[0]
+    @classmethod
+    def color(cls, *key):
+        return cls._lookup(*key)[1]
+
+State = collections.namedtuple('State', ['name', 'text', 'icon', 'color', 'confirm', 'next'])
 
 Widget.register(Switch)
 
-State = collections.namedtuple('State', ['name', 'text', 'icon', 'color', 'confirm', 'next'])
+

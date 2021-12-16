@@ -7,12 +7,12 @@ from mqtt_panel.web.widget.widget import Widget
 
 
 class WSHandler(object):
-    def __init__(self, service, session, ws, client_env):
+    def __init__(self, service, session, ws, client_env, app_identity):
         self._service = service
         self._session = session
         self._ws = ws
         self.client_id = '%(REMOTE_ADDR)s:%(REMOTE_PORT)s' % client_env
-        self._app_hash = None
+        self._app_identity = app_identity
         self._active_widgets = []
 
     def handle(self):
@@ -84,6 +84,6 @@ class WSHandler(object):
         data = {
             'id': 'app',
             'mqttOnline': self._service._mqtt_online,
-            'appHash': self._app_hash,
+            'appIdentity': self._app_identity,
         }
         self.send([data])

@@ -76,11 +76,14 @@ class Server(object):
             query = urllib.parse.parse_qs(content)
 
             success = False
-            message = "Login failed"
+            message = "Bad username or password"
             if 'username' in query:
-                success = session.login(query['username'][0], query['password'][0])
+                try:
+                    success = session.login(query['username'][0], query['password'][0])
+                except (KeyError, IndexError):
+                    pass
                 if success:
-                    message = "Login success"
+                    message = "Success"
             start_response('200 OK', [
                 ('Content-Type', 'application/json'),
                 ('Set-Cookie', session.as_cookie()),
@@ -133,11 +136,6 @@ class Server(object):
         if path == ('manifest.json',):
             start_response('200 OK', [('Content-Type', 'application/json')])
             with open('./resources/manifest.json') as fh:
-                return [fh.read().encode()]
-
-        if path == ('theme.css',):
-            start_response('200 OK', [('Content-Type', 'text/css')])
-            with open('./resources/slate.css') as fh:
                 return [fh.read().encode()]
 
         if path == ('style.css',):

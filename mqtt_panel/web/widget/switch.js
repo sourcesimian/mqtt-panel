@@ -19,7 +19,7 @@ $(function() {
         }
         var value = $(this).data('value');
         value = $(this).find('.value-' + value).data('next');
-        if (!value) {
+        if (value === undefined) {
             $(this).removeClass('widget-press');
             $(this).find('*').removeClass('widget-press');
             return;
@@ -28,7 +28,7 @@ $(function() {
         var This = this;
 
         var send = function() {
-            $('.app').trigger('widget', {
+            $('#app').trigger('widget', {
                 id: $(This).data('id'),
                 value: value,
             });

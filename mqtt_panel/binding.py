@@ -9,12 +9,11 @@ from mqtt_panel.web.app import App
 from mqtt_panel.web.service import Service
 
 class Binding(object):
-    def __init__(self, cache, mqtt, groups, panels, html):
+    def __init__(self, cache, mqtt, groups, panels):
         self._cache = cache
         self._mqtt = mqtt
         self._groups = {}
         self._app = App()
-        # self._panel_page = Page(**html)
         widget_store = self._init_groups(groups)
         self._service = Service(widget_store)
         self._init_panels(panels)
@@ -51,10 +50,8 @@ class Binding(object):
             self._app.add_panel(panel)
             self._app.add_menu('panel-' + panel.name, panel.title, panel.icon)
 
-
     def open(self):
-        for group in self._groups.values():
-            group.open()
+        self._app.open()
 
     def login(self, out):
         self._app.login(out)
@@ -63,4 +60,4 @@ class Binding(object):
         self._app.html(out)
 
     def websocket(self, session, ws, env):
-        self._service.web_socket(session, ws, env)
+        self._service.web_socket(session, ws, env, self._app.identity)

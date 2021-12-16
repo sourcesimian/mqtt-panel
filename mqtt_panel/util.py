@@ -1,6 +1,10 @@
 import hashlib
 import json
 
+import os
+import inspect
+import shutil
+
 from datetime import tzinfo, timedelta, datetime
 
 
@@ -25,9 +29,6 @@ def now_ZA():
 
 
 def write_javascript(klass, fh, indent=0, context=None):
-    import os
-    import inspect
-    import shutil
     script = os.path.splitext(inspect.getfile(klass))[0]
     if context:
         script += '.%s' % context
@@ -45,10 +46,25 @@ def write_javascript(klass, fh, indent=0, context=None):
     except FileNotFoundError:
         pass
 
+def write_style(klass, fh, indent=0, context=None):
+    script = os.path.splitext(inspect.getfile(klass))[0]
+    if context:
+        script += '.%s' % context
+    script += '.css'
+    try:
+        with open(script, 'rt') as in_fh:
+            fh.write('%s<style>\n' % (' ' * indent,))
+            name = '%s: %s' % (klass.__name__, context) if context else klass.__name__
+            fh.write('%s/* %s */\n' % (' ' * indent, name))
+            for line in in_fh:
+                if indent:
+                    fh.write(' ' * indent)
+                fh.write(line)
+            fh.write('%s</style>\n' % (' ' * indent,))
+    except FileNotFoundError:
+        pass
+
 def write_html(klass, fh, indent=0, context=None):
-    import os
-    import inspect
-    import shutil
     script = os.path.splitext(inspect.getfile(klass))[0]
     if context:
         script += '.%s' % context
@@ -64,7 +80,13 @@ def write_html(klass, fh, indent=0, context=None):
     except FileNotFoundError:
         pass
 
+
 def blob_hash(blob):
+    if not blob:
+        return None
     md5 = hashlib.md5()
     md5.update(json.dumps(blob, sort_keys=True).encode())
     return md5.hexdigest()
+
+def pad_string(msg, length, ch):
+     return msg + (ch * (length - len(msg)))

@@ -1,0 +1,27 @@
+ARG BASE=python:3.10-alpine
+FROM ${BASE} as builder
+
+RUN apk add build-base gcc libffi-dev
+
+RUN pip3 install -v gevent
+
+# ---
+FROM ${BASE}
+
+COPY --from=builder /usr/local/lib/python3.10/site-packages/gevent /usr/local/lib/python3.10/site-packages/gevent
+COPY --from=builder /usr/local/lib/python3.10/site-packages/gevent-21.12.0.dist-info /usr/local/lib/python3.10/site-packages/gevent-21.12.0.dist-info
+COPY --from=builder /usr/local/lib/python3.10/site-packages/greenlet /usr/local/lib/python3.10/site-packages/greenlet
+COPY --from=builder /usr/local/lib/python3.10/site-packages/greenlet-1.1.2.dist-info /usr/local/lib/python3.10/site-packages/greenlet-1.1.2.dist-info
+
+COPY python3-requirements.txt /
+RUN pip3 install -r python3-requirements.txt
+
+COPY python3-requirements.txt /
+COPY setup.py /
+COPY mqtt_panel /mqtt_panel
+RUN python3 /setup.py develop
+
+COPY resources/* /resources/
+COPY config-demo.yaml /config.yaml
+
+ENTRYPOINT ["/usr/local/bin/mqtt-panel", "/config.yaml"]

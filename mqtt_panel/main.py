@@ -20,16 +20,17 @@ from mqtt_panel.cache import Cache
 FORMAT = '%(asctime)-15s %(levelname)s [%(module)s] %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 
-
 def cli():
     config_file = 'config.yaml' if len(sys.argv) < 2 else sys.argv[1]
     config = mqtt_panel.config.Config(config_file)
+
+    logging.getLogger().setLevel(level=config.log_level)
 
     cache = Cache(**config.cache)
 
     mqtt = mqtt_panel.mqtt.Mqtt(**config.mqtt)
 
-    binding = mqtt_panel.binding.Binding(cache, mqtt, config.groups, config.panels, config.html)
+    binding = mqtt_panel.binding.Binding(cache, mqtt, config.groups, config.panels)
 
     server = mqtt_panel.server.Server(binding, config.http, config.auth)
 

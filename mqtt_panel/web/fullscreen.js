@@ -4,7 +4,7 @@ class FullScreen {
         this.state = false;
 
         var This = this;
-        $('.fullscreen').on('toggle', function(event) {
+        $('#fullscreen').on('toggle', function(event) {
             This.toggle();
         });
     }

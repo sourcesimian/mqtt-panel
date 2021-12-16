@@ -16,7 +16,7 @@ $(function() {
 });
 
 function on_widget_dropdown(id, value) {
-    $('.app').trigger('widget', {
+    $('#app').trigger('widget', {
         id: id,
         value: value,
     });

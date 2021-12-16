@@ -19,6 +19,10 @@ class MenuBar {
             This.toggle(this);
         });
 
+        $('.menubar-overlay').on('swiperight', function() {
+            This.toggle(this);
+        });
+
         $('.menubar-link').click(function(event) {
             var id = $(this).data('id');
             if (This._on_click(id)) {
@@ -29,12 +33,12 @@ class MenuBar {
 
     hide() {
         $('.menubar').removeClass('menubar-show');
-        $('.menubar-overlay').removeClass('menubar-overlay-show');
+        $('.menubar-overlay').addClass('d-none');
     }
 
     toggle() {
         $('.menubar').toggleClass('menubar-show');
-        $('.menubar-overlay').toggleClass('menubar-overlay-show');
+        $('.menubar-overlay').toggleClass('d-none');
     }
 
     active(id) {

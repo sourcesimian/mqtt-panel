@@ -11,7 +11,7 @@ from mqtt_panel.util import blob_hash
 class WebBase(object):
     def __init__(self, blob):
         self._c = blob
-        self.__identity = blob_hash(self._c)
+        self._identity = blob_hash(self._c)
 
     @property
     def name(self):
@@ -26,7 +26,7 @@ class WebBase(object):
 
     @property
     def identity(self):
-        return self.__identity
+        return self._identity
 
     @classmethod
     def _write_dedent(cls, fh, _text, indent=0):

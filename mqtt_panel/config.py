@@ -27,14 +27,28 @@ class Config(object):
             with open(config_file, 'rt') as fh:
                 self._d = yaml.load(fh, Loader=yaml.Loader)
         except yaml.parser.ParserError as ex:
-            logging.error('Loading %s: %s', config_file, ex)
+            logging.error('ScreenOverlay %s: %s', config_file, ex)
             exit(1)
 
-        logging.debug('Config: %s', self._d)
+        # logging.debug('Config: %s', self._d)
         # logging.debug('Config: %s', json.dumps(self._d, sort_keys=True))
         self._hash = hashlib.md5(str(random.random()).encode('utf-8')).hexdigest()
 
         self._d['mqtt']['client-id'] += '-%s' % self._hash[8:]
+
+    @property
+    def log_level(self):
+        try:
+            level = self._d['logging']['level'].upper()
+            return {
+                'DEBUG': logging.DEBUG,
+                'INFO': logging.INFO,
+                'WARNING': logging.WARNING,
+                'WARN': logging.WARNING,
+                'ERROR': logging.ERROR,
+            }[level]
+        except KeyError:
+            return logging.DEBUG
 
     @property
     def cache(self):
@@ -46,11 +60,7 @@ class Config(object):
 
     @property
     def auth(self):
-        return self._d['auth']
-
-    @property
-    def html(self):
-        return self._d.get('html', None) or {}
+        return self._d.get('auth', None) or {}
 
     @property
     def mqtt(self):

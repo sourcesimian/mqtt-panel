@@ -1,6 +1,5 @@
 class App {
     constructor() {
-      this.appHash = '{self.identity}';
       this.serverOnline = false;
       this.mqttOnline = false;
       this.currentWidgets = [];
@@ -13,6 +12,7 @@ class App {
           return This.on_menubar(id);
       });
       this.fullScreen = new FullScreen();
+      this.screenOverlay = new ScreenOverlay();
       this.modal = new Modal();
       this.wslink = new WSLink(
           function(msg) {
@@ -29,10 +29,6 @@ class App {
           },
           'ws');
 
-      this.overlay = new LinkOverlay(function() {
-          This.wslink.open();
-      });
-      
       this.mtimes = setInterval(function() {
           This.last_updates();
       }, 15000);
@@ -49,19 +45,19 @@ class App {
           This.wslink.open();
       });
 
-      $('.app').on('widget', function(event, blob) {
+      $('#app').on('widget', function(event, blob) {
           This.on_widget(blob);
       });
 
-      $('.app').on('register-widgets', function(event, widgets) {
+      $('#app').on('register-widgets', function(event, widgets) {
         This.currentWidgets = widgets;
         This.on_register_widgets();
       });
 
-      $(".app").on("swipeleft", function(event){
+      $("#app").on("swipeleft", function(event){
         This.on_swipeleft(event);
       });
-      $(".app").on("swiperight", function(event){
+      $("#app").on("swiperight", function(event){
         This.on_swiperight(event);
       });
     }
@@ -88,11 +84,10 @@ class App {
     }
 
     update_app(blob) {
-      /*
-      if (blob.appHash != appHash) {
+      if($('#app').data('identity') != blob.appIdentity) {
+        $('#screen-overlay').trigger('spinner');
         window.location.reload();
       }
-      */
       if ('action' in blob) {
         if (blob.action == 'disconnect') {
           window.location.reload();
@@ -117,7 +112,7 @@ class App {
           return false;
         }
         else if (id == 'fullscreen') {
-          $('.fullscreen').trigger('toggle');
+          $('#fullscreen').trigger('toggle');
         }
         else if (id == 'logout') {
           this.logout();
@@ -178,13 +173,26 @@ class App {
         } else{
             $('.widget').trigger('disable');
         }
-        this.overlay.update(this.serverOnline, this.mqttOnline);
+        this.link_retry_update(this.serverOnline, this.mqttOnline);
     }
     
     on_offline() {
       console.log('offline');
       this.serverOnline = false;
       this.on_online_change();
+    }
+
+    link_retry_update(serverOnline, mqttOnline) {
+      if (serverOnline && mqttOnline) {
+        this.screenOverlay.hide();
+      } else {
+        this.screenOverlay.alert('Offline');
+        this.screenOverlay.spinner();
+      }
+      if (!mqttOnline) {
+        this.screenOverlay.alert('MQTT server offline');
+        this.screenOverlay.spinner();
+      }
     }
 
     update_panel() {
@@ -204,7 +212,17 @@ class App {
     }
 
     on_retry_countdown(countdown) {
-      this.overlay.countdown(countdown);
+      var span = $('<span> Link down</span>');
+      span.prepend($('<span class="material-icons">cloud_off</span>'));
+      if (countdown > 1) {
+          span.append(navigator.onLine ? '' : '(you are offline)');
+          span.append(' ... retry in ' + countdown + 's (tap to retry now)');
+      } else {
+          span.append(' ... retrying now');
+      }
+      this.screenOverlay.alert(span, function() {
+        This.wslink.open();
+      });
     }
 
     on_register_widgets() {
@@ -269,7 +287,7 @@ class App {
 
     move_panel(fn) {
       let panelIds = this.panel_ids()
-      let currentId = $('.panel-show').data('id');
+      let currentId = $('.panel-active').data('id');
       let index = panelIds.indexOf(currentId);
       if (index == -1) {
           return;
@@ -293,7 +311,6 @@ class App {
       });
     }
   }
-  app = new App();
 
   /* Bootstrap styling */
 
@@ -334,3 +351,5 @@ class App {
     $("div.widget-dropdown ul").addClass("dropdown-menu");
     $("div.widget-dropdown li a").addClass("dropdown-item");
 });
+
+let app = new App();

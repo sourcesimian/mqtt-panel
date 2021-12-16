@@ -19,9 +19,10 @@ class Light(Widget):
         logging.debug("Light [%s] on_mqtt: %s", self.id, payload)
         try:
             value = self._payload_map[payload]['payload']
-            self.set_value(value)
         except KeyError as ex:
-            logging.error('Bad MQTT value: %s', payload)
+            logging.warning('Unexpected MQTT value: %s', payload)
+            value = None
+        self.set_value(value)
 
     def _blob(self):
         return {
@@ -40,8 +41,8 @@ class Light(Widget):
                 display = ' d-none'
             
             text = blob.get('text', 'text')
-            icon = blob.get('icon', 'emoji_objects')
-            color = blob.get('color', '')
+            icon = blob.get('icon', Default.icon(text))
+            color = blob.get('color', Default.color(text))
 
             self._write_render(fh, '''\
                 <div class="value-item value-{value}{display}">
@@ -56,11 +57,31 @@ class Light(Widget):
         
         self._write_render(fh, '''\
               <div class="value-item value-null{display}">
-                <span class="material-icons">help</span>
+                <span class="material-icons">do_not_disturb</span>
                 <span>unknown</span>
               </div>
             </div>
         ''', locals(), indent=4)
+
+class Default(object):
+    _map = {
+        ('on', 'true'): ('emoji_objects', 'yellow'),
+        ('off', 'false'): ('emoji_objects','black'),
+        None: ('help_center', None) 
+    }
+    @classmethod
+    def _lookup(cls, key):
+        key = key.lower()
+        for keys in cls._map.keys():
+            if keys and key in keys:
+                return cls._map[keys]
+        return cls._map[None]
+    @classmethod
+    def icon(cls, key):
+        return cls._lookup(key)[0]
+    @classmethod
+    def color(cls, key):
+        return cls._lookup(key)[1]
 
 
 Widget.register(Light)

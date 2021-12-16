@@ -14,7 +14,7 @@ $(function() {
     });
 
     $('.widget-select select').change(function() {
-        $('.app').trigger('widget', {
+        $('#app').trigger('widget', {
             id: $(this).data('id'),
             value: $(this).val(),
         });

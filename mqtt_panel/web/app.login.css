@@ -1,0 +1,34 @@
+:root {
+  --app-login-message-color: red;
+}
+
+.login {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.login > div {
+    max-width: 570px;
+}
+
+.login input {
+    width: 100%;
+}
+
+.login .message {
+    color: var(--app-login-message-color);
+}
+
+.login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

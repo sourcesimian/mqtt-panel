@@ -4,6 +4,7 @@ import logging
 
 from itertools import count
 
+from mqtt_panel.util import blob_hash
 from mqtt_panel.web.component import Component
 from mqtt_panel.web.webbase import WebBase
 from mqtt_panel.web.widget.widget import Widget
@@ -21,20 +22,9 @@ class Panel(Component):
         self._groups.append(group)
 
     def open(self):
-        self._setup_panel_hash()
         for group in self._groups:
             group.open()
-
-    def _setup_panel_hash(self):
-        self._panel_hash = self._hash
-
-    @property
-    def identity(self):
-        md5 = hashlib.md5()
-        md5.update(self._hash)
-        for group in self._groups:
-            md5.update(group.identity)
-        return md5.hexdigest()
+        self._identity = blob_hash([g.identity for g in self._groups])
 
     @property
     def icon(self):
@@ -58,8 +48,7 @@ class Panel(Component):
             logging.error("Widget id %s not found", ex)
 
     def _body(self, fh):
-        fh.write(f'<div class="panel box" data-title="{self.title}" data-id="panel-{self.name}">')
-        fh.write('<div style="height:var(--titlebar-height)"><!-- pad for titlebar --></div>\n\n')
+        fh.write(f'<div class="panel box d-none" data-title="{self.title}" data-id="panel-{self.name}">')
         for group in self._groups:
             group.html(fh)
             fh.write('\n')

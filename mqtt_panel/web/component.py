@@ -1,5 +1,5 @@
 from mqtt_panel.web.webbase import WebBase
-from mqtt_panel.util import write_javascript
+from mqtt_panel.util import write_javascript, write_style
 
 
 class Component(WebBase):
@@ -8,6 +8,7 @@ class Component(WebBase):
         self._indent = indent
 
     def head(self, fh):
+        write_style(self.__class__, fh)
         if hasattr(self, '_head'):
             fh.write('%s<!-- %s -->\n' % (' ' * self._indent, self.__class__.__name__))
             self._head(fh)

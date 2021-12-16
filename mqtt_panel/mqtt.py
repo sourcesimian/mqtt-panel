@@ -33,6 +33,7 @@ class Mqtt(object):
             'host': self._c.get('host', 'localhost'),
             'port': self._c.get('port', 1833),
         }
+        logging.info('Connecting to %s', connect)
         self._client.connect(**connect)
         
     def _on_connect(self, client, userdata, flags, rc):
@@ -80,7 +81,7 @@ class Mqtt(object):
         try:
             payload = message.payload.decode()
             retained = ' (retained)' if message.retain else ''
-            logging.info("Received %s: %s%s", message.topic, payload, retained)
+            logging.debug("Received %s: %s%s", message.topic, payload, retained)
             for listener in self._subscribe_map[message.topic]:
                 try:
                     listener(payload, message.timestamp)

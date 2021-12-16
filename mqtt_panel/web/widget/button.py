@@ -27,7 +27,7 @@ class Button(Widget):
 
     def _html(self, fh):
         icon = self._c.get('icon', 'touch_app')
-        color = self._c.get('color', None)
+        color = self._c.get('color', 'white')
         text = self._c['text']
         confirm = self._c.get('confirm', None)
 

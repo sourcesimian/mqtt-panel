@@ -6,5 +6,5 @@ class FullScreen(Component):
 
     def _body(self, fh):
         self._write_render(fh, '''\
-          <div class="fullscreen d-none"></div>
+          <div id="fullscreen" class="d-none"></div>
         ''')

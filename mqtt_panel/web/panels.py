@@ -1,3 +1,4 @@
+from mqtt_panel.util import blob_hash
 from mqtt_panel.web.component import Component
 
 class Panels(Component):
@@ -14,11 +15,6 @@ class Panels(Component):
         for panel in self._panels:
             panel.body(fh)
 
-    # def _script(self, fh):
-    #     widgets = set()
-    #     for panel in self._panels:
-    #         widgets.update(panel.widgets())
-    #     for widget in sorted(widgets, key=lambda w: w.widget_type):
-    #         fh.write(f'/*** widget: {widget.widget_type} ***/\n')
-    #         widget.javascript(fh)
-    #         fh.write('\n')
+    def open(self):
+        for panel in self._panels:
+            panel.open()

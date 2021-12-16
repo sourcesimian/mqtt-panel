@@ -38,7 +38,8 @@ class Select(Widget):
 
     def _update_mqtt(self):
         self._mqtt.publish(self._c['publish'], self._value,
-                          retain=self._c['retain'], qos=self._c['qos'])
+                           retain=self._c.get('retain', False),
+                           qos=self._c.get('qos', 0))
 
     def on_widget(self, blob):
         logging.debug("Select [%s] on_widget: %s", self.id, blob)

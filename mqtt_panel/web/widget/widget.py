@@ -67,8 +67,8 @@ class Widget(WebBase):
         return 'widget/%s/%s' % (self.identity, key)
 
     def set_value(self, value):
-        if value == self._value:
-            return
+        # if value == self._value:
+        #     return
         self._value = value
         self._updated_now()
         if self._c.get('cache', False) is True:
@@ -81,9 +81,9 @@ class Widget(WebBase):
 
     def html(self, fh):
         self._write_render(fh, '''\
-            <div class="widget widget-{self.widget_type}" data-id="{self.id}" data-mtime="" data-value="{self.value}">
-              <div class="widget-body">
-                <div class="widget-title">{self.title}</div>
+            <div class="widget widget-{self.widget_type} noselect" data-id="{self.id}" data-mtime="" data-value="{self.value}">
+              <div class="body">
+                <div class="title">{self.title}</div>
             ''', locals())
 
         self._html(fh)
@@ -127,6 +127,17 @@ class Widget(WebBase):
     def register(cls, klaas):
         assert klaas.widget_type not in cls._widgets
         cls._widgets[klaas.widget_type] = klaas
+
+class WidgetBlob(dict):
+    def __init__(self, d):
+        for k, v in d.items():
+            self[k] = v
+
+    def __getattr__(self, key):
+        if key in self:
+            return self[key]
+        return super().__getitem__(key)
+
 
 import mqtt_panel.web.widget.button
 import mqtt_panel.web.widget.dropdown

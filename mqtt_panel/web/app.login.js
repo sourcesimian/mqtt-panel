@@ -1,7 +1,8 @@
+
 $(document).ready(function() {
     $("div.login form").submit(function(event) {
       event.preventDefault();
-      $('.login .loading').removeClass('d-none');
+      $('#screen-overlay').trigger('spinner');
       fetch(
         $(this).attr('action'),
         {
@@ -16,7 +17,6 @@ $(document).ready(function() {
         }
       )
       .then(response => {
-        $('.login .loading').addClass('d-none');
         return response.json();
       })
       .then(json => {
@@ -24,12 +24,16 @@ $(document).ready(function() {
         if (json['success'] == true) {
           document.cookie = json['session'];
           location.reload();
+        } else {
+          $('#screen-overlay').trigger('hide');
         }
       })
       .catch(error => {
-        $('.login .loading').addClass('d-none');
+        $('#screen-overlay').trigger('hide');
         $('.login .message').html(error);
-        console.error('login error:', error);
+        console.error('login error: ' + error);
       });
     });
 });
+
+let screenOverlay = new ScreenOverlay();
