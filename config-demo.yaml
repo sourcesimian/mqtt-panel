@@ -647,6 +647,8 @@ groups:
       type: select
       publish: image/src
       values:
+      - text: "Ireland"
+        payload: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Glendalough.jpg/1920px-Glendalough.jpg"
       - text: "Venice"
         payload: "https://upload.wikimedia.org/wikipedia/commons/1/1d/License_Free_Photo_-_Creative_Commons_by_gnuckx_%2811645325224%29.jpg"
       - text: "Cape Town"
@@ -956,6 +958,8 @@ groups:
       type: select
       publish: widget/select
       values:
+      - text: "Ireland"
+        payload: "Guinness"
       - text: "Venice"
         payload: "Gondola"
       - text: "Cape Town"
