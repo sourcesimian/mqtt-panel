@@ -37,4 +37,4 @@ run-amd64:
 	docker run -it --rm -p 8080:8080 ${REGISTRY}${REPO}:${TAG}-amd64
 
 docs:
-	render-readme.py
+	tools/render-readme.py

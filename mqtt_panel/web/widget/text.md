@@ -1,14 +1,14 @@
-Simply display the payload of the subscribed MQTT topic
+Simply display the payload of the subscribed MQTT topic.
 ```
-    - title: <string>
-      type: text
-      subscribe: <topic>        # MQTT topic to listen to
-      color: <color>
+    - title: <string>       # Title text
+      type: text            # Widget type
+      subscribe: <topic>    # MQTT topic to listen on
+      color: <color>        # optional: Color of the text
 ```
 Example:
 ```
-    - title: Text               # Title text
-      type: text                # Widget type
+    - title: My Text
+      type: text
       subscribe: text/content
-      color: "#123456"          # optional: Color of the text
+      color: "#123456"
 ```

@@ -1,11 +1,11 @@
 Display content in a `<iframe>`. The `src` attribute can be bound to a MQTT topic.
 ```
-    - title: <string>           # Title text
-      type: iframe              # Widget type
-      subscribe: <topic>        # optional: MQTT topic to listen to, bound to ifram 'src'
-      attr:                     # Attributes to be set on the iframe
-        src: <url>                # optional: Can be set as a default vaule for 'src'
-        ...                       # additional attributes
+    - title: <string>       # Title text
+      type: iframe          # Widget type
+      subscribe: <topic>    # optional: MQTT topic to listen on, bound to iframe 'src'
+      attr:                 # Attributes to be set on the iframe
+        src: <url>            # optional: Can be set as a default vaule for 'src'
+        ...                   # additional attributes
 ```
 
 Example:

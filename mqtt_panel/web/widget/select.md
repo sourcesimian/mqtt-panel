@@ -1,12 +1,12 @@
 Display a `<select>` box from which you can publish a list of values. Will update to matched payloads is subscribed to a topic.
 ```
-    - title: <string>           # Title text
-      type: select              # Widget type
-      publish: <topic>          # MQTT topic to write to
-      subscribe: <topic>        # optional: MQTT topic to listen to
+    - title: <string>       # Title text
+      type: select          # Widget type
+      publish: <topic>      # MQTT topic to write to
+      subscribe: <topic>    # optional: MQTT topic to listen on
       values:
-      - text: <string>          # Text to show in select
-        payload: <string>       # Payload to send and match
+      - payload: <string>     # Payload to send and match
+        text: <string>        # Text shown in select
       ... (repeat)
 ```
 

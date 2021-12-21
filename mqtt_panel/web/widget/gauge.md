@@ -1,15 +1,16 @@
 Show the received value and a vertical bar gauge where the text, icon and color will change based on the value of the subscribed payload.
 ```
-    - title: <string>           # Title text
-      type: gauge               # Widget type
-      subscribe: <topic>        # MQTT topic to listen to
-      icon: <icon>              # optional: The default icon
+    - title: <string>       # Title text
+      type: gauge           # Widget type
+      subscribe: <topic>    # MQTT topic to listen on
+      icon: <icon>          # optional: The default icon
       ranges:                       
-      - range: [<float>, <float>]  # Value for start and end of range
-        text: <string>          # optional: Text show when value in range
-        color: <color>          # optional: Color show when value in range
-        icon: <icon>            # optional: Icon show when value in range
-      ... (repeat)              # max and min value will be determined from starts and ends
+      - range: [<float>, <float>] # Value for start and end of range
+        text: <string>        # optional: Text shown when value in range
+        color: <color>        # optional: Color shown when value in range
+        icon: <icon>          # optional: Icon shown when value in range
+      ... (repeat)              
+                            # max and min value will be determined from starts and ends
 ```
 
 Example:
