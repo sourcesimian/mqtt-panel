@@ -1,6 +1,6 @@
 REGISTRY=
 REPO=sourcesimian/mqtt-panel
-TAG=$(shell grep version ./setup.py | sed -e 's|.*"\(.*\)".*|\1|')
+TAG=$(shell cat version)
 
 docker-armv6:
 	$(eval REPOTAG := ${REGISTRY}${REPO}:${TAG}-armv6)

@@ -5,8 +5,8 @@ MQTT Panel <!-- omit in toc -->
 
 This project provides a self hostable service that connects to a MQTT broker and serves a progressive web app panel which is fully configurable via YAML.
 
-- [Running](#running)
-  - [Demo](#demo)
+- [Demo](#demo)
+- [Installation](#installation)
   - [Docker](#docker)
   - [Kubernetes](#kubernetes)
 - [Configuration](#configuration)
@@ -24,14 +24,15 @@ This project provides a self hostable service that connects to a MQTT broker and
   - [Development](#development)
 - [License](#license)
 
-# Running
-## Demo
+# Demo
 Run
 ```
 docker run -it --rm -p 8080:8080 sourcesimian/mqtt-panel:latest
 ```
 and browse to http://localhost:8080
 
+# Installation
+Prebuilt container images are available on [Docker Hub](https://hub.docker.com/r/sourcesimian/mqtt-panel).
 ## Docker
 Run
 ```
