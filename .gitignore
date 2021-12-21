@@ -3,3 +3,4 @@
 virtualenv/
 data
 .vscode/
+**/.DS_Store

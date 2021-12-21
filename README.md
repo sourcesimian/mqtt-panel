@@ -29,7 +29,12 @@ Run
 ```
 docker run -it --rm -p 8080:8080 sourcesimian/mqtt-panel:latest
 ```
-and browse to http://localhost:8080
+and browse to http://localhost:8080 which will appear as:
+<div style="display: flex;">
+  <img src="docs/images/Widgets-panel.png" width="250px" style="display: inline-block; margin: 5px"/>
+  <img src="docs/images/Play-panel.png" width="250px" style="display: inline-block; margin: 5px"/>
+  <img src="docs/images/Example-panel.png" width="250px" style="display: inline-block; margin: 5px"/>
+</div>
 
 # Installation
 Prebuilt container images are available on [Docker Hub](https://hub.docker.com/r/sourcesimian/mqtt-panel).
