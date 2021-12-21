@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name="mqtt-panel",
-    version="0.0.0",
-    description="Web panel app for MQTT",
+    version=open('version', 'rt').read().strip(),
+    description="Self hosted Web App panel for MQTT",
     author="Source Simian",
     url="https://github.com/sourcesimian/mqtt-panel",
     license="MIT",

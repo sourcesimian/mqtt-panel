@@ -1,4 +1,4 @@
-Publish the next payload in the list of values to the topic. Update the display with text, icon and color.
+Publish the next payload in the list of values to a topic. Update the display with text, icon and color when the payload returns on the subscribed topic.
 ```
     - title: <string>       # Title text
       type: switch          # Widget type

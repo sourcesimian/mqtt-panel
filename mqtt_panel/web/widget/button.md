@@ -1,4 +1,4 @@
-Publish a constant value to a MQTT topic
+Publish a constant value to a MQTT topic.
 ```
     - title: <string>       # Title text
       type: button          # Widget type

@@ -8,6 +8,7 @@ This project provides a self hostable service that connects to a MQTT broker and
 - [Running](#running)
   - [Demo](#demo)
   - [Docker](#docker)
+  - [Kubernetes](#kubernetes)
 - [Configuration](#configuration)
   - [Panels](#panels)
   - [Groups](#groups)
@@ -29,7 +30,7 @@ Run
 ```
 docker run -it --rm -p 8080:8080 sourcesimian/mqtt-panel:latest
 ```
-and open http://localhost:8080
+and browse to http://localhost:8080
 
 ## Docker
 Run
@@ -41,6 +42,9 @@ docker run -n mqtt-panel -d -it --rm -p 8080:8080 \
     --volume $HOME/.cache/mqtt-panel:/data/cache:rw \
     sourcesimian/mqtt-panel:latest
 ```
+
+## Kubernetes
+Configure your Deployment to suffice the docker configuration above. Additionally you can add a liveness endpoint at `/api/health` on the configured http port. Additionally you can add an ingress controller such as Traefik to perform SSL endpoint termination.
 
 # Configuration
 `mqtt-panel` consumes a single YAML file. To start off you can copy [config-basic.yaml](./config-basic.yaml)
@@ -68,7 +72,7 @@ auth:                           # User Auth
 ```
 ```
 cache:                          # Configure cache
-  root: data/cache              # optional root path, default ./cache
+  root: <path>                  # optional root path, default ./cache
 ```
 ```
 logging:                        # Logging settings
@@ -105,11 +109,19 @@ All widgets have the following common attributes.:
 ```
     - title: <string>           # Title text
       type: <type>              # Widget type
-      qos: [0 | 1 | 2]          # MQTT QoS to use, default: 1
-      retain: [False | True]    # Publish with MQTT retain flag, default: False
-      cache: [False | True]     # Cache last seen payloads.
+      qos: [0 | 1 | 2]          # optional: MQTT QoS to use, default: 1
+      retain: [False | True]    # optional: Publish with MQTT retain flag, default: False
+      cache: [False | True]     # optional: Cache last seen payloads, default: False
+      ref: <widget reference>   # optional: Identifier string for widget reuse.
 ```
-`retain` is a flag that is set when publishing a payload to MQTT. If set the message will persist in the broker, clients will re-receive that payload when reconnecting. This does not always give the desired behaviour. To improve user experience of mqtt-panel `cache: True` will preserve the last seen payload from the subscribed MQTT topic. This allows the server to remember the state of a topic with `retain: False` during server restarts. You will note after a restart some widgets will show "unknown" until such time as it recieves a new payload on the subscribed MQTT topic. 
+`retain` is a flag that is set when publishing a payload to MQTT. If set the message will persist in the broker, clients will re-receive that payload when reconnecting. This does not always give the desired behaviour.
+
+You will note that at startup some widgets show "unknown" until a payload on the subscribed MQTT topic is recieved. To improve user experience of mqtt-panel `cache: True` will preserve the last seen payload for a widget. This enables the server to immediately show the last known state after a restart, even with a MQTT topic using `retain: False`. 
+
+To reuse a widget add the `ref` attribute, and then add the widget to other groups as:
+```
+    - ref: <widget reference>  # Identifier of widget to reuse
+```
 
 
 ### Text
@@ -162,7 +174,7 @@ Example:
 <!-- include:end --> 
 ### Button
 <!-- include:begin mqtt_panel/web/widget/button.md -->
-Publish a constant value to a MQTT topic
+Publish a constant value to a MQTT topic.
 ```
     - title: <string>       # Title text
       type: button          # Widget type
@@ -182,7 +194,7 @@ Example:
 
 ### Switch
 <!-- include:begin mqtt_panel/web/widget/switch.md -->
-Publish the next payload in the list of values to the topic. Update the display with text, icon and color.
+Publish the next payload in the list of values to a topic. Update the display with text, icon and color when the payload returns on the subscribed topic.
 ```
     - title: <string>       # Title text
       type: switch          # Widget type
@@ -250,7 +262,7 @@ Example:
 <!-- include:end --> 
 ### Select
 <!-- include:begin mqtt_panel/web/widget/select.md -->
-Display a `<select>` box from which you can publish a list of values. Will update to matched payloads is subscribed to a topic.
+Display a `<select>` box from which you can publish a list of values. Will update to matched payloads if subscribed to a topic.
 ```
     - title: <string>       # Title text
       type: select          # Widget type

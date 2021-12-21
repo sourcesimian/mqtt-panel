@@ -1,4 +1,4 @@
-Display a `<select>` box from which you can publish a list of values. Will update to matched payloads is subscribed to a topic.
+Display a `<select>` box from which you can publish a list of values. Will update to matched payloads if subscribed to a topic.
 ```
     - title: <string>       # Title text
       type: select          # Widget type
