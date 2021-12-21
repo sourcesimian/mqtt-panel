@@ -29,11 +29,19 @@ class Mqtt(object):
         self._client.on_disconnect = self._on_disconnect
         self._client.on_message=self._on_message 
 
+        username = self._c.get('username', None)
+        password = self._c.get('password', None)
+        self._client.username_pw_set(username, password)
+
         connect = {
-            'host': self._c.get('host', 'localhost'),
+            'host': self._c.get('host', '127.0.0.1'),
             'port': self._c.get('port', 1833),
+            'keepalive': self._c.get('keepalive', 60),
+            'bind_address': self._c.get('bind_address', ''),
+            'bind_port': self._c.get('bind_port', 0),
+            'properties': self._c.get('properties', None),
         }
-        logging.info('Connecting to %s', connect)
+        logging.info('Connecting to %s:%s', connect['host'], connect['port'])
         self._client.connect(**connect)
         
     def _on_connect(self, client, userdata, flags, rc):

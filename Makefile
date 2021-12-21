@@ -1,6 +1,6 @@
 REGISTRY=
 REPO=sourcesimian/mqtt-panel
-TAG=$(shell grep version ./setup.py | sed -e 's|.*"\(.*\)".*|\1|')
+TAG=$(shell cat version)
 
 docker-armv6:
 	$(eval REPOTAG := ${REGISTRY}${REPO}:${TAG}-armv6)
@@ -22,13 +22,21 @@ docker-amd64:
 
 push: docker-armv6 docker-amd64
 	$(eval REPOTAG := ${REGISTRY}${REPO}:${TAG})
+	$(eval LATEST := ${REGISTRY}${REPO}:latest)
 	docker push ${REPOTAG}-amd64
 	docker push ${REPOTAG}-armv6
+
 	docker manifest create \
 	    ${REPOTAG} \
 	    --amend ${REPOTAG}-amd64 \
 	    --amend ${REPOTAG}-armv6
 	docker manifest push ${REPOTAG}
+
+	docker manifest create \
+	    ${LATEST} \
+	    --amend ${REPOTAG}-amd64 \
+	    --amend ${REPOTAG}-armv6
+	docker manifest push ${LATEST}
 
 run-armv6:
 	docker run -it --rm -p 8080:8080 ${REGISTRY}${REPO}:${TAG}-armv6
@@ -36,3 +44,5 @@ run-armv6:
 run-amd64:
 	docker run -it --rm -p 8080:8080 ${REGISTRY}${REPO}:${TAG}-amd64
 
+docs:
+	tools/render-readme.py

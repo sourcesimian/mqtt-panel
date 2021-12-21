@@ -25,7 +25,7 @@ class Iframe(Widget):
 
     def _html(self, fh):
         self._write_render(fh, '<iframe src=""')
-        for key, value in self._c['attr'].items():
+        for key, value in self._c.get('attr',[]).items():
             if key == 'src':
                 continue
             if self._c['attr'].get(key, None):

@@ -5,7 +5,7 @@ mqtt:
   topic-prefix: demo/mqtt-panel
 
 http:
-  host: 0.0.0.0
+  bind: 0.0.0.0
   port: 8080
   max-connections: 10
 
@@ -21,18 +21,7 @@ cache:
   root: data/cache
 
 panels:
-  - name: example
-    title: Example
-    icon: home
-    groups:
-    - example_mood
-    - example_inside
-    - example_outside
-    - example_irrigation
-    - example_pool
-
-  - name: widgets
-    title: Widgets
+  - title: Widgets
     icon: widgets
     groups:
       - widget_button_text
@@ -43,8 +32,7 @@ panels:
       - widget_image
       - widget_iframe
 
-  - name: play
-    title: Play
+  - title: Play
     icon: toys
     groups:
     - play_buttons
@@ -58,6 +46,14 @@ panels:
     - play_image
     - play_iframe
 
+  - title: Example
+    icon: home
+    groups:
+    - example_mood
+    - example_inside
+    - example_outside
+    - example_irrigation
+    - example_pool
 
 groups:
   - title: Mood
@@ -932,8 +928,6 @@ groups:
       type: gauge
       subscribe: widget/gauge
       icon: health_and_safety
-      min: 0
-      max: 100
       ranges:
       - range: [0, 20]
         text: Poor

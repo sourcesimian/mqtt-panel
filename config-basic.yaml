@@ -1,0 +1,45 @@
+
+mqtt:
+  host: broker.emqx.io
+  port: 1883
+  client-id: mqtt-panel
+  topic-prefix: demo/mqtt-panel
+
+http:
+  bind: 0.0.0.0
+  port: 8080
+
+auth:
+  users:
+  - username: admin
+    password: admin
+
+logging:
+  level: INFO
+
+cache:
+  root: data/cache
+
+panels:
+  - title: My Panel
+    icon: widgets
+    groups:
+      - group_one
+
+groups:
+  - title: My Group
+    name: group_one
+    widgets:
+    - title: Switch
+      type: switch
+      publish: example/switch
+      subscribe: example/switch
+      values:
+      - payload: OFF
+        text: off
+        icon: light
+      - payload: ON
+        text: ON
+        icon: light
+      qos: 1
+      cache: True

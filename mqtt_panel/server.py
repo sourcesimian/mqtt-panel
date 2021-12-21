@@ -24,8 +24,8 @@ class Server(object):
         logging.info('Open')
         pool = gevent.pool.Pool(self._c.get('max-connections', 100))
         bind = (
-            self._c['host'],
-            int(self._c['port'])
+            self._c.get('bind', '0.0.0.0'),
+            int(self._c.get('port', 1883))
         )
         logging.info('Server listening on: %s:%s', *bind)
         self._server = gevent.pywsgi.WSGIServer(
