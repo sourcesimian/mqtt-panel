@@ -44,10 +44,10 @@ docker run -n mqtt-panel -d -it --rm -p 8080:8080 \
 ```
 
 ## Kubernetes
-Configure your Deployment to suffice the docker configuration above. Additionally you can add a liveness endpoint at `/api/health` on the configured http port. Additionally you can add an ingress controller such as Traefik to perform SSL endpoint termination.
+Configure your Deployment to suffice the docker configuration above. Additionally you can add a liveness endpoint at `/api/health` on the configured http port. To perform SSL endpoint termination you can add an ingress controller such as [Traefik](https://traefik.io/) which comes standard with [K3s](https://k3s.io/).
 
 # Configuration
-`mqtt-panel` consumes a single YAML file. To start off you can copy [config-basic.yaml](./config-basic.yaml)
+`mqtt-panel` consumes a single [YAML](https://yaml.org/) file. To start off you can copy [config-basic.yaml](./config-basic.yaml)
 
 ```
 mqtt:
