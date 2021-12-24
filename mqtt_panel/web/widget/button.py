@@ -1,11 +1,13 @@
 import logging
 
-from mqtt_panel.web.widget.widget import Widget
+from mqtt_panel.web.widget.widget import Widget, WidgetCtx
+
 
 class Button(Widget):
     widget_type = 'button'
-    def __init__(self, *args, **kwargs):
-        super(Button, self).__init__(*args, **kwargs)
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
 
     def open(self):
         pass
@@ -26,22 +28,21 @@ class Button(Widget):
         }
 
     def _html(self, fh):
-        icon = self._c.get('icon', 'touch_app')
-        color = self._c.get('color', 'white')
-        text = self._c.get('text', '')
-        confirm = self._c.get('confirm', None)
+        ctx = WidgetCtx('icon', 'color', 'text', 'confirm')
+        ctx.icon = self._c.get('icon', 'touch_app')
+        ctx.color = self._c.get('color', 'white')
+        ctx.text = self._c.get('text', '')
+        ctx.confirm = self._c.get('confirm', None)
 
-        if color:
-            color = ' style="color:%s"' % color
+        if ctx.color:
+            ctx.color = f' style="color:{ctx.color}"'
 
-        if confirm:
-            confirm = f' data-confirm="{confirm}"'
-        
+        if ctx.confirm:
+            ctx.confirm = f' data-confirm="{ctx.confirm}"'
+
         self._write_render(fh, '''\
-            <div class="value"{confirm}>
-              <span class="material-icons"{color}>{icon}</span>
-              <span{color}>{text}</span>
+            <div class="value"{ctx.confirm}>
+              <span class="material-icons"{ctx.color}>{ctx.icon}</span>
+              <span{ctx.color}>{ctx.text}</span>
             </div>
-        ''', locals(), indent=4)
-
-Widget.register(Button)
+        ''', {'ctx': ctx}, indent=4)

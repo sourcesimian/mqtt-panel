@@ -5,7 +5,7 @@ import time
 import pathlib
 
 
-class Cache(object):
+class Cache:
     def __init__(self, **config):
         self._root = config.get('root', 'cache')
         self._max_cache = config.get('max-cache', 86400 * 30)  # Cache for 30 days
@@ -22,7 +22,7 @@ class Cache(object):
     def get(self, key):
         fname = self._value_file(key)
         try:
-            with fname.open(mode='rt') as fh:
+            with fname.open(mode='rt', encoding="utf8") as fh:
                 value = json.load(fh)
                 timestamp = fname.stat().st_mtime
                 return timestamp, value
@@ -35,7 +35,7 @@ class Cache(object):
     def set(self, key, timestamp, value):
         fname = self._value_file(key)
         try:
-            with fname.open(mode='wt') as fh:
+            with fname.open(mode='wt', encoding="utf8") as fh:
                 json.dump(value, fh)
                 os.utime(fname, (timestamp, timestamp))
             return

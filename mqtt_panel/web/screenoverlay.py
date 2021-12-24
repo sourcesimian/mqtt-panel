@@ -1,8 +1,9 @@
 from mqtt_panel.web.component import Component
 
+
 class ScreenOverlay(Component):
     def __init__(self):
-        super(ScreenOverlay, self).__init__(4)
+        super().__init__(4)
 
     def _body(self, fh):
         self._write_render(fh, '''\

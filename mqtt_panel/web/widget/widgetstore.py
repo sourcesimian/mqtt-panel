@@ -1,10 +1,9 @@
 import itertools
-import logging
 
 from mqtt_panel.web.widget.widget import Widget
 
 
-class WidgetStore(object):
+class WidgetStore:
     def __init__(self, mqtt, cache):
         self._widget_map = {}
         self._identity_map = {}
@@ -31,7 +30,7 @@ class WidgetStore(object):
 
         if widget.ref:
             if widget.ref in self._ref_map:
-                raise KeyError('Ignoring duplicate ref "%s"' % widget.ref)
+                raise KeyError(f'Ignoring duplicate ref "{widget.ref}"')
             self._ref_map[widget.ref] = widget
         self._identity_map[widget.identity] = widget
         self._widget_map[widget.id] = widget

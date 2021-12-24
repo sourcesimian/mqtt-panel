@@ -2,12 +2,14 @@ import logging
 import collections
 
 from mqtt_panel.util import pad_string
-from mqtt_panel.web.widget.widget import Widget
+from mqtt_panel.web.widget.widget import Widget, WidgetCtx
+
 
 class Switch(Widget):
     widget_type = 'switch'
+
     def __init__(self, *args, **kwargs):
-        super(Switch, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._value_map = {}
         for idx, blob in enumerate(self._c['values']):
@@ -22,11 +24,11 @@ class Switch(Widget):
         else:
             logging.warning('No topic configured for "%s"', self.name)
 
-    def _on_mqtt(self, payload, timestamp):
+    def _on_mqtt(self, payload, _timestamp):
         logging.debug("{%s} Rx MQTT: %s", self.id, payload)
         try:
             value = self._value_map[payload]
-        except KeyError as ex:
+        except KeyError:
             logging.warning('Unexpected MQTT value: %s', payload)
             value = None
         self.set_value(value)
@@ -58,7 +60,7 @@ class Switch(Widget):
             text_padded = pad_string(text, max_text_len, '&nbsp;')
             next_idx = idx + 1
             try:
-                 self._c['values'][next_idx]
+                self._c['values'][next_idx]
             except IndexError:
                 next_idx = 0
             state = State(
@@ -86,54 +88,55 @@ class Switch(Widget):
             <div class="value">
         ''', indent=4)
         for state in self._iter_states():
-
-            confirm = ''
-            color = ''
-            show = ' d-none'
+            ctx = WidgetCtx('confirm', 'color', 'show')
+            ctx.confirm = ''
+            ctx.color = ''
+            ctx.show = ' d-none'
 
             if state.confirm:
-                confirm = f' data-confirm="{state.confirm}"'
+                ctx.confirm = f' data-confirm="{state.confirm}"'
 
             if state.color:
-                color = f' style="color:{state.color};"'
+                ctx.color = f' style="color:{state.color};"'
 
             if state.name == self.value:
-                show = ''
+                ctx.show = ''
 
             self._write_render(fh, '''\
-              <div class="value-item value-{state.name}{show}"{confirm} data-next="{state.next}">
-                <span class="material-icons"{color}>{state.icon}</span>
-                <span{color}>{state.text}</span>
+              <div class="value-item value-{state.name}{ctx.show}"{ctx.confirm} data-next="{state.next}">
+                <span class="material-icons"{ctx.color}>{state.icon}</span>
+                <span{ctx.color}>{state.text}</span>
               </div>
-            ''', locals(), indent=6)
-        
+            ''', {'ctx': ctx, 'state': state}, indent=6)
+
         self._write_render(fh, '''\
             </div>
-        ''', locals(), indent=4)
+        ''', indent=4)
 
-class Default(object):
+
+class Default:
     _map = {
         ('on', 'true'): ('toggle_on', '#52D017'),
-        ('off', 'false'): ('toggle_off','black'),
-        None: ('help_center', None) 
+        ('off', 'false'): ('toggle_off', 'black'),
+        None: ('help_center', None),
     }
+
     @classmethod
     def _lookup(cls, *keys):
         for key in keys:
             key = key.lower()
-            for map in cls._map.keys():
-                if map and key in map:
-                    return cls._map[map]
+            for k, v in cls._map.items():
+                if k and key in k:
+                    return v
         return cls._map[None]
+
     @classmethod
     def icon(cls, *key):
         return cls._lookup(*key)[0]
+
     @classmethod
     def color(cls, *key):
         return cls._lookup(*key)[1]
 
+
 State = collections.namedtuple('State', ['name', 'text', 'icon', 'color', 'confirm', 'next'])
-
-Widget.register(Switch)
-
-

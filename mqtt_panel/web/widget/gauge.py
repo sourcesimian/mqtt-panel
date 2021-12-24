@@ -2,27 +2,28 @@ import logging
 
 from mqtt_panel.web.widget.widget import Widget, WidgetBlob
 
+
 class Gauge(Widget):
     widget_type = 'gauge'
+
     def __init__(self, *args, **kwargs):
-        super(Gauge, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._max = None
         self._min = None
-        for range in self._iter_ranges():
+        for value_range in self._iter_ranges():
             if self._min is None:
-                self._min = range.start
+                self._min = value_range.start
             if self._max is None:
-                self._max = range.end
-            self._min = min(self._min, range.start)
-            self._max = max(self._max, range.end)
+                self._max = value_range.end
+            self._min = min(self._min, value_range.start)
+            self._max = max(self._max, value_range.end)
 
     def open(self):
         self._mqtt.subscribe(self._c['subscribe'], self._on_mqtt)
 
-    def _on_mqtt(self, payload, timestamp):
+    def _on_mqtt(self, payload, _timestamp):
         logging.debug("{%s} Rx MQTT: %s", self.id, payload)
-        # TODO: Validate
         try:
             if '.' in payload:
                 value = float(payload)
@@ -48,17 +49,17 @@ class Gauge(Widget):
         percent = 0
 
         if value is not None:
-            for range in self._iter_ranges():
-                if range.start <= value <= range.end:
-                    if range.text:
-                        text = range.text
-                    if range.icon:
-                        icon = range.icon
-                    if range.color:
-                        color = range.color
+            for value_range in self._iter_ranges():
+                if value_range.start <= value <= value_range.end:
+                    if value_range.text:
+                        text = value_range.text
+                    if value_range.icon:
+                        icon = value_range.icon
+                    if value_range.color:
+                        color = value_range.color
                     break
-            percent =  int((value - self._min) / (self._max - self._min) * 100)
-        
+            percent = int((value - self._min) / (self._max - self._min) * 100)
+
         return WidgetBlob({
             'value': value,
             'percent': percent,
@@ -77,19 +78,16 @@ class Gauge(Widget):
             <div class="value">{blob.value}</div>
             <div class="meter"><span style="height:{blob.percent};background-color={blob.color}"></span></div>
           <!-- </div> -->
-        ''', locals(), indent=4)
+        ''', {'self': self, 'blob': blob}, indent=4)
 
     def _iter_ranges(self):
         for blob in self._c['ranges']:
             start, end = blob.get('range', [None, None])
-            range = WidgetBlob({
+            value_range = WidgetBlob({
                 'start': start,
                 'end': end,
                 'text': blob.get('text', None),
                 'color': blob.get('color', None),
                 'icon': blob.get('icon', None),
             })
-            yield range
-
-
-Widget.register(Gauge)
+            yield value_range

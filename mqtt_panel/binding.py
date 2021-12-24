@@ -1,14 +1,13 @@
-import itertools
 import logging
 
 from mqtt_panel.web.group import Group
 from mqtt_panel.web.panel import Panel
 from mqtt_panel.web.widget.widgetstore import WidgetStore
-from mqtt_panel.web.widget.widget import Widget
 from mqtt_panel.web.app import App
 from mqtt_panel.web.service import Service
 
-class Binding(object):
+
+class Binding:
     def __init__(self, cache, mqtt, groups, panels):
         self._cache = cache
         self._mqtt = mqtt
@@ -22,7 +21,6 @@ class Binding(object):
         self._app.add_menu('logout', 'Logout', 'logout')
 
     def _init_groups(self, groups):
-        counter = itertools.count(1)
         widget_store = WidgetStore(self._mqtt, self._cache)
 
         for group_blob in groups:
@@ -39,7 +37,6 @@ class Binding(object):
         return widget_store
 
     def _init_panels(self, panels):
-        counter = itertools.count(1)
         for panel_blob in panels:
             panel = Panel(panel_blob)
             self._mqtt.watch_online(self._service.mqtt_online)

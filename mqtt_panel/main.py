@@ -1,24 +1,29 @@
 import sys
 import logging
 
-from functools import partial
-
 import gevent
 import gevent.monkey
-from geventwebsocket.handler import WebSocketHandler
+from geventwebsocket.handler import WebSocketHandler        # noqa: E402,F401
 
 gevent.monkey.patch_all()
 gevent.get_hub().SYSTEM_ERROR = BaseException
 
-import mqtt_panel.binding
-import mqtt_panel.config
-import mqtt_panel.mqtt
-import mqtt_panel.server
+import mqtt_panel.binding                                   # noqa: E402 pylint: disable=C0413,C0412
+import mqtt_panel.config                                    # noqa: E402 pylint: disable=C0413,C0412
+import mqtt_panel.mqtt                                      # noqa: E402 pylint: disable=C0413,C0412
+import mqtt_panel.server                                    # noqa: E402 pylint: disable=C0413,C0412
 
-from mqtt_panel.cache import Cache
+
+from mqtt_panel.cache import Cache                          # noqa: E402 pylint: disable=C0413,C0412
+from mqtt_panel.web.widget.widgets import register_widgets  # noqa: E402 pylint: disable=C0413,C0412
+
+
+register_widgets()
+
 
 FORMAT = '%(asctime)-15s %(levelname)s [%(module)s] %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+
 
 def cli():
     config_file = 'config.yaml' if len(sys.argv) < 2 else sys.argv[1]
@@ -46,4 +51,4 @@ def cli():
     except KeyboardInterrupt:
         server.close()
         mqtt.close()
-
+    return 0

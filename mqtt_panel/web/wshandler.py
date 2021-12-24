@@ -6,12 +6,12 @@ import geventwebsocket.exceptions
 from mqtt_panel.web.widget.widget import Widget
 
 
-class WSHandler(object):
+class WSHandler:
     def __init__(self, service, session, ws, client_env, app_identity):
         self._service = service
         self._session = session
         self._ws = ws
-        self.client_id = '%(REMOTE_ADDR)s:%(REMOTE_PORT)s' % client_env
+        self.client_id = f'{client_env["REMOTE_ADDR"]}:{client_env["REMOTE_PORT"]}'
         self._app_identity = app_identity
         self._active_widgets = []
 
@@ -27,11 +27,11 @@ class WSHandler(object):
             blob_list = json.loads(rx)
             for blob in blob_list:
                 try:
-                    id = blob['id']
-                    if id == 'register':
+                    blob_id = blob['id']
+                    if blob_id == 'register':
                         self.register(blob['widgets'])
-                    elif id.startswith(Widget._id_prefix):
-                        widget = self._service._widget_store.get_widget(id)
+                    elif blob_id.startswith(Widget._id_prefix):
+                        widget = self._service._widget_store.get_widget(blob_id)
                         if not widget:
                             continue
                         widget.on_widget(blob)
@@ -40,7 +40,7 @@ class WSHandler(object):
                         #     self._service.notify_all([widget.blob()])
                         # else:
                         #     self._send(widget.blob())
-                except Exception as ex:
+                except Exception:       # pylint: disable=W0703
                     logging.exception('(%s) Handling message blob "%s"', self.client_id, blob)
         logging.debug('(%s) Disconnect', self.client_id)
 

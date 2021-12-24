@@ -4,9 +4,10 @@ from mqtt_panel.web.component import Component
 
 Action = namedtuple("Action", "name id")
 
+
 class TitleBar(Component):
     def __init__(self):
-        super(TitleBar, self).__init__(4)
+        super().__init__(4)
         self._actions = []
 
     def _body(self, fh):
@@ -16,4 +17,4 @@ class TitleBar(Component):
           <span class="titlebar-title">MQTT Panel</span>
           <span class="titlebar-toggle-menubar material-icons">menu</span>
         </div>
-        ''', locals(), indent=self._indent)
+        ''', indent=self._indent)

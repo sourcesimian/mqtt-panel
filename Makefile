@@ -2,6 +2,21 @@ REGISTRY=
 REPO=sourcesimian/mqtt-panel
 TAG=$(shell cat version)
 
+check:
+	flake8 ./mqtt_panel --ignore E501
+	find ./mqtt_panel -name '*.py' | xargs pylint -d invalid-name \
+	                                         -d locally-disabled \
+	                                         -d missing-docstring \
+	                                         -d too-few-public-methods \
+	                                         -d protected-access \
+	                                         -d line-too-long \
+	                                         -d no-self-use \
+	                                         -d too-many-arguments \
+	|| true  # Ignore issues in pylint, just show the report
+
+test:
+	pytest ./tests/ -vvv --junitxml=./reports/unittest-results.xml
+
 docker-armv6:
 	$(eval REPOTAG := ${REGISTRY}${REPO}:${TAG}-armv6)
 	docker buildx build \
@@ -44,5 +59,5 @@ run-armv6:
 run-amd64:
 	docker run -it --rm -p 8080:8080 ${REGISTRY}${REPO}:${TAG}-amd64
 
-docs:
+readme:
 	tools/render-readme.py

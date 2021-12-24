@@ -1,5 +1,3 @@
-import logging
-
 from itertools import count
 from mqtt_panel.util import blob_hash
 
@@ -8,7 +6,7 @@ from mqtt_panel.web.webbase import WebBase
 
 class Group(WebBase):
     def __init__(self, blob):
-        super(Group, self).__init__(blob)
+        super().__init__(blob)
 
         self._open = False
         self._widget_map = {}
@@ -29,19 +27,15 @@ class Group(WebBase):
         self._identity = blob_hash([w.identity for w in self._widgets])
         self._open = True
 
-    def gen_blobs(self):
-        for widget in self._widgets:
-            yield widget.blob()
-
     def html(self, fh):
         fh.write(f'<div class="group"><!-- {self.name} -->\n')
         fh.write(f'<div class="title">{self.title}</div>\n')
-        fh.write(f'<div class="box">\n')
+        fh.write('<div class="box">\n')
         for widget in self._widgets:
             fh.write(f'<!-- widget: {self.name} : {widget.name} [{widget.id}] -->\n')
             widget.html(fh)
             fh.write('\n')
-        fh.write(f'</div>\n')
+        fh.write('</div>\n')
         fh.write(f'</div><!-- {self.name} -->\n')
 
     def widget_classes(self):

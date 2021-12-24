@@ -3,12 +3,13 @@ MQTT Panel <!-- omit in toc -->
 
 ***Self hosted Web App panel for MQTT***
 
-This project provides a self hostable service that connects to a MQTT broker and serves a progressive web app panel which is fully configurable via YAML.
+This project provides a self hostable service that connects to a MQTT broker and serves a progressive web app panel which is fully configurable via YAML. It aims to be a simple panel that gives user interactivity with MQTT topics. Suitable for standalone or MQTT microservice deployments, and can be deployed alongside home automation solutions. It does not offer higher level capabilities such as automations, integrations or scheduling.
 
 - [Demo](#demo)
 - [Installation](#installation)
   - [Docker](#docker)
   - [Kubernetes](#kubernetes)
+  - [MQTT Broker](#mqtt-broker)
 - [Configuration](#configuration)
   - [Panels](#panels)
   - [Groups](#groups)
@@ -52,6 +53,48 @@ docker run -n mqtt-panel -d -it --rm -p 8080:8080 \
 ## Kubernetes
 Configure your Deployment to suffice the docker configuration above. Additionally you can add a liveness endpoint at `/api/health` on the configured http port. To perform SSL endpoint termination you can add an ingress controller such as [Traefik](https://traefik.io/) which comes standard with [K3s](https://k3s.io/).
 
+A typical Deployment might include:
+```
+      volumes:
+      - name: config
+        configMap:
+          name: mqtt-panel-config
+      - name: data
+        hostPath:
+          path: /mnt/mqtt-panel/data
+          type: DirectoryOrCreate
+```
+
+```
+      containers:
+      - name: mqtt-panel
+        image: sourcesimian/mqtt-panel:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+        - name: data
+          mountPath: /data
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          httpGet:
+            path: /api/health
+            port: 8080
+```
+Kubernetes allows for the config file to be supplied in various ways. Using a ConfigMap the following commands are a convienient way to supply and update directly from your YAML:
+```
+kubectl -n "$NAMESPACE" delete configmap mqtt-panel-config &>/dev/null || true
+kubectl -n "$NAMESPACE" create configmap mqtt-panel-config \
+        --from-file=config.yaml=./config-my.yaml
+kubectl -n "$NAMESPACE" rollout restart deploy mqtt-panel
+```
+
+## MQTT Broker
+An installation of **mqtt-panel** will need a MQTT broker to connect to. There are many possibilities available. [Eclipse Mosquitto](https://github.com/eclipse/mosquitto/blob/master/README.md) is a great self hosted option with many installation options including prebuilt containers on [Docker Hub](https://hub.docker.com/_/eclipse-mosquitto). In the demo [EMQ X](https://www.emqx.io/), a free Open-Source, Cloud-Native broker, is used.
+
 # Configuration
 `mqtt-panel` consumes a single [YAML](https://yaml.org/) file. To start off you can copy [config-basic.yaml](./config-basic.yaml)
 
@@ -67,7 +110,7 @@ mqtt:
 ```
 http:
   bind: <bind>                  # optional: Interface on which web server will listen, default 0.0.0.0
-  port: <port>                  # Port on which web server will listen, default 1883
+  port: <port>                  # Port on which web server will listen, default 8080
   max-connections: <integer>    # optional: Limit the number of concurrent connections, default 100
 ```
 ```

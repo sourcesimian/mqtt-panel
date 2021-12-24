@@ -1,7 +1,7 @@
-import base64
 import io
 import json
 import logging
+import urllib
 
 import gevent.pool
 import gevent.server
@@ -10,10 +10,10 @@ import gevent.pywsgi
 
 from geventwebsocket.handler import WebSocketHandler
 
-from mqtt_panel.session import Session 
+from mqtt_panel.session import Session
 
 
-class Server(object):
+class Server:
     def __init__(self, binding, config, auth):
         self._server = None
         self._c = config
@@ -38,6 +38,7 @@ class Server(object):
             return True
         except OSError as ex:
             logging.error('%s: %s', ex.__class__.__name__, ex)
+        return False
 
     def close(self):
         logging.info('Close')
@@ -72,7 +73,6 @@ class Server(object):
 
         if path == ('api', 'login'):
             content = env['wsgi.input'].read().decode()
-            import urllib
             query = urllib.parse.parse_qs(content)
 
             success = False
@@ -110,9 +110,8 @@ class Server(object):
             if env.get('HTTP_UPGRADE', None) == 'websocket':
                 self._binding.websocket(session, env["wsgi.websocket"], env)
                 return []
-            else:
-                start_response('400 Bad Request', [('Content-Type', 'text/html')])
-                return [b'<h1>Bad Request</h1>']
+            start_response('400 Bad Request', [('Content-Type', 'text/html')])
+            return [b'<h1>Bad Request</h1>']
 
         if path == ('api', 'health',):
             start_response('200 OK', [('Content-Type', 'application/json')])
@@ -135,14 +134,13 @@ class Server(object):
 
         if path == ('manifest.json',):
             start_response('200 OK', [('Content-Type', 'application/json')])
-            with open('./resources/manifest.json') as fh:
+            with open('./resources/manifest.json', encoding="utf8") as fh:
                 return [fh.read().encode()]
 
         if path == ('style.css',):
             start_response('200 OK', [('Content-Type', 'text/css')])
-            with open('./resources/style.css') as fh:
+            with open('./resources/style.css', encoding="utf8") as fh:
                 return [fh.read().encode()]
 
         start_response('404 Not Found', [('Content-Type', 'text/html')])
         return [b'<h1>Not Found</h1>']
-

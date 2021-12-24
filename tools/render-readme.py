@@ -16,7 +16,7 @@ def repl(match):
   
   parts = [INCLUDE_BEGIN % path + '\n']
   for file in glob.iglob(path):
-    with open(file, 'rt') as fh:
+    with open(file, 'rt', encoding="utf8") as fh:
       content = fh.read()
       parts.append(content)
       if content[-1] != '\n':
@@ -26,7 +26,7 @@ def repl(match):
   return ''.join(parts)
 
 def update_md_includes(filename):
-  with open(filename, 'rt') as fh:
+  with open(filename, 'rt', encoding="utf8") as fh:
     content = fh.read()
 
   new_content = re_include.sub(repl, content)

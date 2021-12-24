@@ -2,10 +2,12 @@ import logging
 
 from mqtt_panel.web.widget.widget import Widget
 
+
 class Select(Widget):
     widget_type = 'select'
+
     def __init__(self, *args, **kwargs):
-        super(Select, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._value = ''
         self._text_map = {}
@@ -28,7 +30,7 @@ class Select(Widget):
         except KeyError:
             return ''
 
-    def _on_mqtt(self, payload, timestamp):
+    def _on_mqtt(self, payload, _timestamp):
         logging.debug("Select [%s] on_mqtt: %s", self.id, payload)
         if payload == self._value:
             return
@@ -60,13 +62,10 @@ class Select(Widget):
           <div class="value">
             <select data-id="{self.id}">
             <option selected></option>
-        ''', indent=4)
+        ''', {'self': self}, indent=4)
         for blob in self._c['values']:
             fh.write(f'      <option value="{blob["payload"]}">{blob["text"]}</option>\n')
         self._write_render(fh, '''\
             </select>
           </div>
         ''', indent=4)
-
-
-Widget.register(Select)

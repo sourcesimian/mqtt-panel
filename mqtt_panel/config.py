@@ -1,8 +1,7 @@
 import hashlib
-import json
 import logging
-import os.path
 import random
+import sys
 
 import yaml
 
@@ -11,8 +10,8 @@ from yaml.resolver import Resolver
 
 for ch in "OoYyNn":
     Resolver.yaml_implicit_resolvers[ch] = [x for x in
-            Resolver.yaml_implicit_resolvers[ch]
-            if x[0] != 'tag:yaml.org,2002:bool']
+                                            Resolver.yaml_implicit_resolvers[ch]
+                                            if x[0] != 'tag:yaml.org,2002:bool']
 
 
 def default(item, key, value):
@@ -20,21 +19,19 @@ def default(item, key, value):
         item[key] = value
 
 
-class Config(object):
+class Config:
     def __init__(self, config_file):
-        logging.debug('Config file: %s', config_file)
+        logging.info('Config file: %s', config_file)
         try:
-            with open(config_file, 'rt') as fh:
+            with open(config_file, 'rt', encoding="utf8") as fh:
                 self._d = yaml.load(fh, Loader=yaml.Loader)
         except yaml.parser.ParserError as ex:
             logging.error('ScreenOverlay %s: %s', config_file, ex)
-            exit(1)
+            sys.exit(1)
 
-        # logging.debug('Config: %s', self._d)
-        # logging.debug('Config: %s', json.dumps(self._d, sort_keys=True))
         self._hash = hashlib.md5(str(random.random()).encode('utf-8')).hexdigest()
 
-        self._d['mqtt']['client-id'] += '-%s' % self._hash[8:]
+        self._d['mqtt']['client-id'] += f'-{self._hash[8:]}'
 
     @property
     def log_level(self):
@@ -75,5 +72,3 @@ class Config(object):
     def panels(self):
         for item in self._d['panels']:
             yield item
-
-

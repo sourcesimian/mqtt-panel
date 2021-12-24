@@ -3,7 +3,7 @@ import logging
 from mqtt_panel.web.wshandler import WSHandler
 
 
-class Service(object):
+class Service:
     def __init__(self, widget_store):
         self._mqtt_online = False
         self._widget_store = widget_store
@@ -21,7 +21,7 @@ class Service(object):
 
         try:
             wsh.handle()
-        except Exception as ex:
+        except Exception:
             logging.exception('(%s) Web socket handler', wsh.client_id)
         finally:
             del self._web_sockets[wsh.client_id]
@@ -29,9 +29,9 @@ class Service(object):
     def mqtt_online(self, online):
         logging.debug("MQTT online status:%s", online)
         self._mqtt_online = online
-        for client_id, wsh in self._web_sockets.items():
+        for _client_id, wsh in self._web_sockets.items():
             wsh.send_app_info()
 
     def notify_all(self, blob):
-        for client_id, wsh in self._web_sockets.items():
+        for _client_id, wsh in self._web_sockets.items():
             wsh.send(blob)

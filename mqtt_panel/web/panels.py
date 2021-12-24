@@ -1,9 +1,9 @@
-from mqtt_panel.util import blob_hash
 from mqtt_panel.web.component import Component
+
 
 class Panels(Component):
     def __init__(self):
-        super(Panels, self).__init__(4)
+        super().__init__(4)
         self._panel_map = {}
         self._panels = []
 

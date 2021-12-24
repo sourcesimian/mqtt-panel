@@ -1,6 +1,3 @@
-import hashlib
-import json
-import logging
 import re
 
 import textwrap
@@ -8,7 +5,7 @@ import textwrap
 from mqtt_panel.util import blob_hash
 
 
-class WebBase(object):
+class WebBase:
     def __init__(self, blob):
         self._c = blob
         self._identity = blob_hash(self._c)
@@ -35,7 +32,8 @@ class WebBase(object):
 
     def _write_render(self, fh, _text, ctx=None, indent=0):
         ctx = ctx or {}
-        ctx.update(locals())
+        # ctx.update(locals())
+
         def repl(matchobj):
-            return str(eval(matchobj.group(0)[1:-1], ctx))
-        self._write_dedent(fh, re.sub('{[0-9A-Za-z.-_\[\]\(\)\"\' ]+}', repl, _text), indent=indent)
+            return str(eval(matchobj.group(0)[1:-1], ctx))      # pylint: disable=W0123
+        self._write_dedent(fh, re.sub(r'{[0-9A-Za-z.-_\[\]\(\)\"\' ]+}', repl, _text), indent=indent)

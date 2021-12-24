@@ -3,7 +3,7 @@ import http.cookies
 import urllib.parse
 
 
-class Session(object):
+class Session:
     _cookie_path = '/'
     _cookie_secure = False
     _cookie_ttl = 86400 * 365
@@ -62,8 +62,7 @@ class Session(object):
     def as_cookie(self):
         if self.authorized:
             return self._session_cookie()
-        else:
-            return self._deleted_cookie()
+        return self._deleted_cookie()
 
     def _session_cookie(self):
         session = http.cookies.Morsel()

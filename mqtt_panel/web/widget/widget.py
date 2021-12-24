@@ -11,14 +11,13 @@ class Widget(WebBase):
     _widgets = {}
 
     def __init__(self, index, blob, mqtt, cache):
-        super(Widget, self).__init__(blob)
+        super().__init__(blob)
 
         try:
             self.ref = blob['ref']
         except KeyError:
             self.ref = None
 
-        # self.__index = index
         self.__id = self._id_prefix + str(index)
         self._mqtt = mqtt
         self._cache = cache
@@ -40,15 +39,10 @@ class Widget(WebBase):
     def id(self):
         return self.__id
 
-    # @property
-    # def index(self):
-    #     return self.__index
-
     def set_update_widget(self, update_widget):
         self._on_update_widget = update_widget
 
     def _updated_now(self):
-        # TODO: timezone support
         self.__last_update = time.time()
 
     def _update_clients(self):
@@ -64,11 +58,9 @@ class Widget(WebBase):
         logging.warning('on_widget() not implemented for "%s": %s', self.widget_type, blob)
 
     def _cache_key(self, key):
-        return 'widget/%s/%s' % (self.identity, key)
+        return f'widget/{self.identity}/{key}'
 
     def set_value(self, value):
-        # if value == self._value:
-        #     return
         self._value = value
         self._updated_now()
         if self._c.get('cache', False) is True:
@@ -84,7 +76,7 @@ class Widget(WebBase):
             <div class="widget widget-{self.widget_type} noselect" data-id="{self.id}" data-mtime="" data-value="{self.value}">
               <div class="body">
                 <div class="title">{self.title}</div>
-            ''', locals())
+            ''', {'self': self})
 
         self._html(fh)
 
@@ -120,16 +112,18 @@ class Widget(WebBase):
             write_javascript(cls._widgets[widget_type], fh)
 
     @classmethod
-    def klaas(cls, type):
-        return cls._widgets[type]
+    def klaas(cls, class_type):
+        return cls._widgets[class_type]
 
     @classmethod
     def register(cls, klaas):
         assert klaas.widget_type not in cls._widgets
         cls._widgets[klaas.widget_type] = klaas
 
+
 class WidgetBlob(dict):
     def __init__(self, d):
+        super().__init__()
         for k, v in d.items():
             self[k] = v
 
@@ -139,13 +133,19 @@ class WidgetBlob(dict):
         return super().__getitem__(key)
 
 
-import mqtt_panel.web.widget.button
-import mqtt_panel.web.widget.dropdown
-import mqtt_panel.web.widget.gauge
-import mqtt_panel.web.widget.iframe
-import mqtt_panel.web.widget.image
-import mqtt_panel.web.widget.light
-import mqtt_panel.web.widget.select
-import mqtt_panel.web.widget.switch
-import mqtt_panel.web.widget.text
-import mqtt_panel.web.widget.value
+class WidgetCtx(dict):
+    def __init__(self, *keys):
+        super().__init__()
+        for key in keys:
+            self[key] = None
+
+    def __setattr__(self, key, value):
+        if key in self:
+            self[key] = value
+            return
+        raise KeyError(key)
+
+    def __getattr__(self, key):
+        if key in self:
+            return self[key]
+        raise KeyError(key)
