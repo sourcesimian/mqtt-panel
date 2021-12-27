@@ -100,12 +100,43 @@ An installation of **mqtt-panel** will need a MQTT broker to connect to. There a
 
 ```
 mqtt:
-  host: <host>                  # optional: MQTT broker host, default: 127.0.0.1
-  port: <port>                  # optional: MQTT broker port, default 1883
-  username: <string>            # optional: MQTT broker username
-  password: <string>            # optional: MQTT password username
-  client-id: mqtt-panel         # MQTT client identifier, often brokers require this to be unique
-  topic-prefix: <topic prefix>  # optional: Scopes the MQTT topic prefix
+  host: <host>                        # optional: MQTT broker host, default: 127.0.0.1
+  port: <port>                        # optional: MQTT broker port, default 1883
+  client-id: mqtt-panel               # MQTT client identifier, often brokers require this to be unique
+  topic-prefix: <topic prefix>        # optional: Scopes the MQTT topic prefix
+  auth:                               # optional: Defines the authentication used to connect to the MQTT broker
+    type: 'none' | 'basic' | 'mtls'   # type of authentication ('none', 'basic', 'mtls')
+    ... (type-specific options -- see below)
+```
+```
+# mqtt explict no-authentication
+mqtt:
+  ...
+  auth:
+    type: 'none'
+```
+```
+# mqtt basic authentication
+mqtt:
+  ...
+  auth:
+    type: 'basic'
+    username: <string>          # optional: MQTT broker username
+    password: <string>          # optional: MQTT broker password
+```
+```
+# mqtt mutual-tls authentication
+mqtt:
+  ...
+  auth:
+    type: 'mtls'
+    # hint: if running in a container, use the container-relevant-paths for the following files
+    cafile: <string>            # path to the CA file used to verify the server
+    certfile: <string>          # path to the certificate presented by this client
+    keyfile: <string>           # path to the private-key presented by this client
+    keyfile_password: <string>  # optional: password used to decrypt the `keyfile`
+    protocols:                  # optional: list of ALPN protocols to add to the SSL connection
+      - <string>
 ```
 ```
 http:
