@@ -1,7 +1,9 @@
 import hashlib
-import json
-import os
 import inspect
+import json
+import logging
+import os
+import re
 
 from datetime import tzinfo, timedelta, datetime
 
@@ -97,3 +99,33 @@ def blob_hash(blob):
 
 def pad_string(msg, length, ch):
     return msg + (ch * (length - len(msg)))
+
+
+def check_mqtt_topic_matches_pattern(topic: str, pattern: str) -> bool:
+    """determines if a specific topic matches an MQTT topic-pattern
+
+    Args:
+        topic (str): a specific topic to test (e.g. my/actual/topic/1/2/3)
+        pattern (str): an mqtt topic pattern to test against (e.g. my/+/topic/#)
+
+    Returns:
+        bool: True if the topic satisfies the pattern, False otherwise
+    """
+    def mqtt_pattern_to_regex(pattern: str) -> str:
+        _pattern = pattern
+        # find all `+` symbols like `+/...`, `.../+/...`, `.../+` and replace with "not `/`"
+        _pattern = re.sub('(?:^|(?<=/))\+(?:$|(?=/))', '[^/]+', _pattern)
+        # find all `#` symbols like `#`, `.../#` and replace with wildcard to end
+        _pattern = re.sub('(?:^|(?<=/))#$', '.+$', _pattern)
+        return _pattern
+
+    try:
+        _pattern = mqtt_pattern_to_regex(pattern)
+        if '#' in _pattern:
+            logging.error(f"bad mqtt topic pattern `{pattern}`")
+            return False
+        else:
+            return re.match(_pattern, topic) != None
+    except re.error:
+        logging.error(f"bad mqtt topic pattern `{pattern}`")
+        return False

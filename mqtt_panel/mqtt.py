@@ -1,9 +1,14 @@
 import logging
 import os.path
 import sys
+from typing import Callable
 
 import paho.mqtt.client
 import gevent
+
+from .util import check_mqtt_topic_matches_pattern
+
+SubscriptionCallback = Callable[[str, str], None]
 
 
 class Mqtt:
@@ -92,7 +97,7 @@ class Mqtt:
             payload = message.payload.decode()
             retained = ' (retained)' if message.retain else ''
             logging.debug("Received %s: %s%s", message.topic, payload, retained)
-            for listener in self._subscribe_map[message.topic]:
+            for listener in self._get_matching_listeners(message.topic):
                 try:
                     listener(payload, message.timestamp)
                 except Exception:
@@ -105,6 +110,13 @@ class Mqtt:
         if not p[0]:
             return None
         return os.path.join(self._topic_prefix, *p)
+
+    def _get_matching_listeners(self, topic: str) -> SubscriptionCallback:
+        listeners = []
+        for (subscription_topic, subscription_listeners) in self._subscribe_map.items():
+            if check_mqtt_topic_matches_pattern(topic, subscription_topic):
+                listeners.extend(subscription_listeners)
+        return listeners
 
     def subscribe(self, topic, on_payload):
         topic = self._topic(topic)
