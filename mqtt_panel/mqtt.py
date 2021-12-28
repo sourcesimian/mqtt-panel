@@ -1,5 +1,6 @@
 import logging
 import os.path
+import ssl
 import sys
 from typing import Callable
 
@@ -36,9 +37,20 @@ class Mqtt:
         self._client.on_disconnect = self._on_disconnect
         self._client.on_message = self._on_message
 
-        username = self._c.get('username', None)
-        password = self._c.get('password', None)
-        self._client.username_pw_set(username, password)
+        _mqtt_auth = self._c.get('auth')
+        if _mqtt_auth is None or _mqtt_auth.get('type') == 'none':
+            logging.info('no mqtt auth defined')
+        elif _mqtt_auth.get('type') == 'basic':
+            logging.info('setting up basic auth')
+            username = self._c.get('username', None)
+            password = self._c.get('password', None)
+            self._client.username_pw_set(username, password)
+        elif _mqtt_auth.get('type') == 'mtls':
+            logging.info('setting up mtls mqtt auth')
+            mtls_context = generate_mtls_context(_mqtt_auth)
+            self._client.tls_set_context(mtls_context)
+        else:
+            logging.warning('failed to determine mqtt auth settings')
 
         connect = {
             'host': self._c.get('host', '127.0.0.1'),
