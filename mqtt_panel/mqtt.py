@@ -2,49 +2,14 @@ import logging
 import os.path
 import ssl
 import sys
-from typing import Dict
+from typing import Callable
 
 import paho.mqtt.client
 import gevent
 
-from .util import validate_path
+from .util import check_mqtt_topic_matches_pattern
 
-
-def generate_mtls_context(config: Dict[str, str]):
-    """builds the SSLContext required for Mutual-TLS (mTLS)
-
-    Args:
-        config (Dict[str, str]): defines the mTLS configuration
-            cafile (str): path to the CA file used to verify the server
-            certfile (str): path to the certificate presented by this client
-                            for authentication
-            keyfile (str): path to the private-key presented by this client for
-                           authentication
-            keyfile_password (str): password used to decrypt the `keyfile`, or
-                                    `None`
-            protocols (List[str]): list of alpn protocols to use for the mTLS
-                                   handshake
-
-    Returns:
-        SSLContext: the SSLContext object to use for the client connection
-    """
-    ssl_context = ssl.create_default_context()
-    ssl_context.set_alpn_protocols(config.get("protocols", []))
-
-    if config.get("cafile", False):
-        validate_path(config.get("cafile"))
-        ssl_context.load_verify_locations(cafile=config.get("cafile"))
-
-    if config.get("certfile", False) and config.get("keyfile", False):
-        validate_path(config.get("certfile"))
-        validate_path(config.get("keyfile"))
-        ssl_context.load_cert_chain(
-            certfile=config.get("certfile"),
-            keyfile=config.get("keyfile"),
-            password=config.get("keyfile_password", None)
-        )
-
-    return ssl_context
+SubscriptionCallback = Callable[[str, str], None]
 
 
 class Mqtt:
@@ -144,7 +109,7 @@ class Mqtt:
             payload = message.payload.decode()
             retained = ' (retained)' if message.retain else ''
             logging.debug("Received %s: %s%s", message.topic, payload, retained)
-            for listener in self._subscribe_map[message.topic]:
+            for listener in self._get_matching_listeners(message.topic):
                 try:
                     listener(payload, message.timestamp)
                 except Exception:
@@ -157,6 +122,13 @@ class Mqtt:
         if not p[0]:
             return None
         return os.path.join(self._topic_prefix, *p)
+
+    def _get_matching_listeners(self, topic: str) -> SubscriptionCallback:
+        listeners = []
+        for (subscription_topic, subscription_listeners) in self._subscribe_map.items():
+            if check_mqtt_topic_matches_pattern(topic, subscription_topic):
+                listeners.extend(subscription_listeners)
+        return listeners
 
     def subscribe(self, topic, on_payload):
         topic = self._topic(topic)
