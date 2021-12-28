@@ -4,15 +4,12 @@ TAG=$(shell cat version)
 
 check:
 	flake8 ./mqtt_panel --ignore E501
-	find ./mqtt_panel -name '*.py' | xargs pylint -d invalid-name \
-	                                         -d locally-disabled \
-	                                         -d missing-docstring \
-	                                         -d too-few-public-methods \
-	                                         -d protected-access \
-	                                         -d line-too-long \
-	                                         -d no-self-use \
-	                                         -d too-many-arguments \
-	|| true  # Ignore issues in pylint, just show the report
+	find ./mqtt_panel -name '*.py' \
+	| xargs pylint -d invalid-name \
+	               -d missing-docstring \
+	               -d line-too-long \
+	               -d too-many-arguments \
+	               -d duplicate-code
 
 test:
 	pytest ./tests/ -vvv --junitxml=./reports/unittest-results.xml

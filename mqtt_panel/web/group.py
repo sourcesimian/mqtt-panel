@@ -13,7 +13,6 @@ class Group(WebBase):
         self._widgets = []
         self._web_sockets = {}
         self._client_counter = count()
-        self._mqtt_online = False
 
     def add_widget(self, widget):
         self._widget_map[widget.id] = widget

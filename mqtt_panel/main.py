@@ -3,7 +3,7 @@ import logging
 
 import gevent
 import gevent.monkey
-from geventwebsocket.handler import WebSocketHandler        # noqa: E402,F401
+from geventwebsocket.handler import WebSocketHandler        # noqa: E402,F401 pylint: disable=W0611
 
 gevent.monkey.patch_all()
 gevent.get_hub().SYSTEM_ERROR = BaseException

@@ -17,9 +17,12 @@ class WSLink {
     }
 
     send(blob_list) {
-        var msg = JSON.stringify(blob_list);
-        console.log('WS Tx: ' + msg)
-        this._ws.send(msg);
+      if (this.is_open == false) {
+        return;
+      }
+      var msg = JSON.stringify(blob_list);
+      console.log('WS Tx: ' + msg)
+      this._ws.send(msg);
     }
 
     _url() {
@@ -62,11 +65,9 @@ class WSLink {
       };
       this._ws.onclose = function(event) {
         console.log('WS Close');
-        console.log(event);
         This.on_close();
       };
       this._ws.onerror = function(event) {
-        console.log(event);
         /* console.log('WS ERROR: readyState:' + this._ws.readyState); */
         This.on_error();
       };
@@ -96,16 +97,19 @@ class WSLink {
       this._retry_countdown_init = this._retry_min_delay;
     }
 
+    retry_now() {
+      this._retry_countdown == 0;
+      this.open();
+    }
+
     _retry_wait() {
       this._retry_timer = null;
       if (this._retry_countdown <= 0) {
-        this._retry_timer = null;
         return;
       }
       this._retry_countdown --;
       if (this._retry_countdown <= 0) {
-        this._retry_countdown == 0;
-        this.open();
+        this.retry_now();
       } else {
         this.retry_countdown(this._retry_countdown);
         var This = this;

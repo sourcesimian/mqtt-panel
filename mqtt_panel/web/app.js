@@ -212,16 +212,18 @@ class App {
     }
 
     on_retry_countdown(countdown) {
-      var span = $('<span> Link down</span>');
-      span.prepend($('<span class="material-icons">cloud_off</span>'));
+      let msg = '<span>Link down</span> <span class="material-icons">cloud_off</span>';
+      msg += '<br><span class="info">';
       if (countdown > 1) {
-          span.append(navigator.onLine ? '' : '(you are offline)');
-          span.append(' ... retry in ' + countdown + 's (tap to retry now)');
+        msg += navigator.onLine ? '' : 'You are offline';
+        msg += ' ... retry in ' + countdown + 's (or tap)';
       } else {
-          span.append(' ... retrying now');
+        msg += ' ... retrying now';
       }
-      this.screenOverlay.alert(span, function() {
-        This.wslink.open();
+      msg += '<span>';
+      var This = this;
+      this.screenOverlay.alert($(msg), function() {
+        This.wslink.retry_now();
       });
     }
 

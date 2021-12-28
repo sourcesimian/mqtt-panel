@@ -38,8 +38,15 @@
   /* bg-warning */
   background-color: var(--alert-bg) !important;
 
-  /* text center */
+  /* text */
   text-align: center !important;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+#screen-overlay .alert .info {
+  font-size: 0.75em;
+  font-weight: normal;
 }
 
 #screen-overlay .spinner {

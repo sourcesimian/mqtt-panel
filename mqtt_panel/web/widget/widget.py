@@ -7,7 +7,7 @@ from mqtt_panel.util import write_javascript
 
 class Widget(WebBase):
     widget_type = 'widget'
-    _id_prefix = 'w-'
+    id_prefix = 'w-'
     _widgets = {}
 
     def __init__(self, index, blob, mqtt, cache):
@@ -18,7 +18,7 @@ class Widget(WebBase):
         except KeyError:
             self.ref = None
 
-        self.__id = self._id_prefix + str(index)
+        self.__id = self.id_prefix + str(index)
         self._mqtt = mqtt
         self._cache = cache
 

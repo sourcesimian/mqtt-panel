@@ -11,6 +11,12 @@ This project provides a self hostable service that connects to a MQTT broker and
   - [Kubernetes](#kubernetes)
   - [MQTT Broker](#mqtt-broker)
 - [Configuration](#configuration)
+  - [MQTT](#mqtt)
+    - [MQTT - Basic Auth](#mqtt---basic-auth)
+    - [MQTT - mTLS Auth](#mqtt---mtls-auth)
+  - [Web Server](#web-server)
+  - [User Auth](#user-auth)
+  - [Cache and Logging](#cache-and-logging)
   - [Panels](#panels)
   - [Groups](#groups)
   - [Widgets](#widgets)
@@ -98,58 +104,49 @@ An installation of **mqtt-panel** will need a MQTT broker to connect to. There a
 # Configuration
 `mqtt-panel` consumes a single [YAML](https://yaml.org/) file. To start off you can copy [config-basic.yaml](./config-basic.yaml)
 
+## MQTT
 ```
 mqtt:
-  host: <host>                        # optional: MQTT broker host, default: 127.0.0.1
-  port: <port>                        # optional: MQTT broker port, default 1883
-  client-id: mqtt-panel               # MQTT client identifier, often brokers require this to be unique
-  topic-prefix: <topic prefix>        # optional: Scopes the MQTT topic prefix
-  auth:                               # optional: Defines the authentication used to connect to the MQTT broker
-    type: 'none' | 'basic' | 'mtls'   # type of authentication ('none', 'basic', 'mtls')
-    ... (type-specific options -- see below)
+  host: <host>                  # optional: MQTT broker host, default: 127.0.0.1
+  port: <port>                  # optional: MQTT broker port, default 1883
+  client-id: mqtt-panel         # MQTT client identifier, often brokers require this to be unique
+  topic-prefix: <topic prefix>  # optional: Scopes the MQTT topic prefix
+  auth:                         # optional: Defines the authentication used to connect to the MQTT broker
+    type: <type>                # Auth type: none|basic|mtls, default: none
+    ... (<type> specific options)
 ```
+### MQTT - Basic Auth
 ```
-# mqtt explict no-authentication
-mqtt:
-  ...
-  auth:
-    type: 'none'
-```
-```
-# mqtt basic authentication
-mqtt:
-  ...
-  auth:
-    type: 'basic'
+    type: basic
     username: <string>          # optional: MQTT broker username
     password: <string>          # optional: MQTT broker password
 ```
+### MQTT - mTLS Auth
 ```
-# mqtt mutual-tls authentication
-mqtt:
-  ...
-  auth:
-    type: 'mtls'
-    # hint: if running in a container, use the container-relevant-paths for the following files
-    cafile: <string>            # path to the CA file used to verify the server
-    certfile: <string>          # path to the certificate presented by this client
-    keyfile: <string>           # path to the private-key presented by this client
-    keyfile_password: <string>  # optional: password used to decrypt the `keyfile`
-    protocols:                  # optional: list of ALPN protocols to add to the SSL connection
-      - <string>
+    type: mtls
+    cafile: <file>              # CA file used to verify the server
+    certfile: <file>            # Certificate presented by this client
+    keyfile: <file>             # Private key presented by this client
+    keyfile_password: <string>  # optional: Password used to decrypt the `keyfile`
+    protocols:
+      - <string>                # optional: list of ALPN protocols to add to the SSL connection
 ```
+## Web Server
 ```
 http:
   bind: <bind>                  # optional: Interface on which web server will listen, default 0.0.0.0
   port: <port>                  # Port on which web server will listen, default 8080
   max-connections: <integer>    # optional: Limit the number of concurrent connections, default 100
 ```
+## User Auth
 ```
 auth:                           # User Auth
   users:                        # optional: User/password auth
   - username: <string>
     password: <string>
 ```
+
+## Cache and Logging
 ```
 cache:                          # Configure cache
   root: <path>                  # optional root path, default ./cache
@@ -396,6 +393,9 @@ Example:
 
 # Contribution
 Yes sure! And please. I built mqtt-panel because I couldn't find a "I'm not ready to commit to full blown HA yet" solution that was self hosted and server side configurable. I don't know much about contemporary HTML, CSS and Typescript so I will gladly accept advice from those who know more. I want it to be a project that is quick and easy to get up and running, and helps open up MQTT to anyone.
+
+Before pushing a PR please consider adding unit tests and ensure that `make check` and `make test` are clean.
+
 ## Development
 Setup the virtualenv:
 

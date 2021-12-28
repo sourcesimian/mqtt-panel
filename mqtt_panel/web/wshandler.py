@@ -30,8 +30,8 @@ class WSHandler:
                     blob_id = blob['id']
                     if blob_id == 'register':
                         self.register(blob['widgets'])
-                    elif blob_id.startswith(Widget._id_prefix):
-                        widget = self._service._widget_store.get_widget(blob_id)
+                    elif blob_id.startswith(Widget.id_prefix):
+                        widget = self._service.get_widget(blob_id)
                         if not widget:
                             continue
                         widget.on_widget(blob)
@@ -46,8 +46,7 @@ class WSHandler:
 
     def register(self, widgets):
         self._active_widgets = widgets
-
-        blob_list = [w.blob() for w in self._service._widget_store if w.id in self._active_widgets]
+        blob_list = self._service.get_blob_list(self._active_widgets)
         self._send(blob_list)
 
     def send(self, data):
@@ -62,7 +61,7 @@ class WSHandler:
 
         filtered_data = []
         for blob in data:
-            if blob['id'].startswith(Widget._id_prefix):
+            if blob['id'].startswith(Widget.id_prefix):
                 if blob['id'] in self._active_widgets:
                     filtered_data.append(blob)
             else:
@@ -83,7 +82,7 @@ class WSHandler:
     def send_app_info(self):
         data = {
             'id': 'app',
-            'mqttOnline': self._service._mqtt_online,
+            'mqttOnline': self._service.mqtt_online,
             'appIdentity': self._app_identity,
         }
         self.send([data])

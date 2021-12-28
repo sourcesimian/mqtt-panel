@@ -19,13 +19,16 @@ class Server:
         self._c = config
         self._auth = auth
         self._binding = binding
+        log_level = self._c.get('log-level', None)
+        if log_level:
+            logging.getLogger('geventwebsocket.handler').setLevel(log_level)
 
     def open(self):
         logging.info('Open')
         pool = gevent.pool.Pool(self._c.get('max-connections', 100))
         bind = (
             self._c.get('bind', '0.0.0.0'),
-            int(self._c.get('port', 1883))
+            int(self._c.get('port', 8080))
         )
         logging.info('Server listening on: %s:%s', *bind)
         self._server = gevent.pywsgi.WSGIServer(
@@ -45,7 +48,7 @@ class Server:
         self._server.stop()
         self._server = None
 
-    def _handle_request(self, env, start_response):
+    def _handle_request(self, env, start_response):  # pylint: disable=R0911,R0912,R0915
         path = tuple(env["PATH_INFO"].split('/'))[1:]
 
         session = Session(self._auth)

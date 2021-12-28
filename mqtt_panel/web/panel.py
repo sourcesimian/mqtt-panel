@@ -10,7 +10,6 @@ class Panel(Component):
         self._groups = []
         self._web_sockets = {}
         self._client_counter = count()
-        self._mqtt_online = False
 
     def add_group(self, group):
         self._groups.append(group)

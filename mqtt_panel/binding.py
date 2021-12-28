@@ -39,7 +39,7 @@ class Binding:
     def _init_panels(self, panels):
         for panel_blob in panels:
             panel = Panel(panel_blob)
-            self._mqtt.watch_online(self._service.mqtt_online)
+            self._mqtt.watch_online(self._service.set_mqtt_online)
 
             for group_name in panel_blob['groups']:
                 panel.add_group(self._groups[group_name])

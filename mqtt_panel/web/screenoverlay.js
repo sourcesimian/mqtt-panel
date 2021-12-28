@@ -10,17 +10,20 @@ class ScreenOverlay {
         $('#screen-overlay').on('hide', function(event) {
             This.hide();
         });
+        this.onclick = undefined;
+        $('#screen-overlay .alert').on('click', function(event){
+            if (This.onclick !== undefined) {
+                This.onclick();
+            }
+            return false;
+        });
     }
 
-    alert(message) {
+    alert(message, onclick) {
         $('#screen-overlay').removeClass('d-none');
         $('#screen-overlay .alert').removeClass('d-none');
         $('#screen-overlay .alert').html(message);
-        if (onclick !== undefined) {
-            $('#screen-overlay .alert').on('click', onclick);
-        } else {
-            $('#screen-overlay .alert').off('click');
-        }
+        this.onclick = onclick;
     }
 
     spinner() {
@@ -31,7 +34,6 @@ class ScreenOverlay {
     hide() {
         $('#screen-overlay').addClass('d-none');
         $('#screen-overlay .alert').addClass('d-none');
-        $('#screen-overlay .alert').off('click');
         $('#screen-overlay .spinner').addClass('d-none');
     }
 }

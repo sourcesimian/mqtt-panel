@@ -9,13 +9,14 @@ from mqtt_panel.web.wslink import WSLink
 from mqtt_panel.web.webbase import WebBase
 from mqtt_panel.web.panels import Panels
 from mqtt_panel.web.widget.widget import Widget
-from mqtt_panel.util import blob_hash, write_javascript, write_html, write_style
+from mqtt_panel.util import write_javascript, write_html, write_style
 
 
 class App(WebBase):
     def __init__(self):
         super().__init__({})
 
+        self._identity = None
         self._titlebar = TitleBar()
         self._menubar = MenuBar()
         self._screen_overlay = ScreenOverlay()
@@ -33,7 +34,7 @@ class App(WebBase):
 
     def open(self):
         self._panels.open()
-        self._identity = blob_hash([self._panels.identity])
+        self._identity = self._panels.identity
 
     def add_panel(self, panel):
         self._panels.add_panel(panel)
@@ -44,6 +45,7 @@ class App(WebBase):
     def login(self, fh):
         with self._in_html(fh):
             with self._in_head(fh):
+                self._titlebar.head(fh)
                 self._screen_overlay.head(fh)
                 write_style(self.__class__, fh, indent=0, context='login')
                 self._write_render(fh, '''\
@@ -55,9 +57,8 @@ class App(WebBase):
                     ''')
 
             with self._in_body(fh):
-                TitleBar()._body(fh)
+                self._titlebar.body(fh)
                 self._screen_overlay.body(fh)
-
                 write_html(self.__class__, fh, indent=0, context='login')
                 self._screen_overlay.script(fh)
                 write_javascript(self.__class__, fh, indent=0, context='login')
