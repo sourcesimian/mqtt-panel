@@ -106,26 +106,28 @@ def check_mqtt_topic_matches_pattern(topic: str, pattern: str) -> bool:
 
     Args:
         topic (str): a specific topic to test (e.g. my/actual/topic/1/2/3)
-        pattern (str): an mqtt topic pattern to test against (e.g. my/+/topic/#)
+        pattern (str): mqtt topic pattern to test against (e.g. my/+/topic/#)
 
     Returns:
         bool: True if the topic satisfies the pattern, False otherwise
     """
     def mqtt_pattern_to_regex(pattern: str) -> str:
         _pattern = pattern
-        # find all `+` symbols like `+/...`, `.../+/...`, `.../+` and replace with "not `/`"
-        _pattern = re.sub('(?:^|(?<=/))\+(?:$|(?=/))', '[^/]+', _pattern)
-        # find all `#` symbols like `#`, `.../#` and replace with wildcard to end
+        # find all `+` symbols like `+/...`, `.../+/...`, `.../+`
+        # and replace with "not `/`"
+        _pattern = re.sub(r'(?:^|(?<=/))\+(?:$|(?=/))', '[^/]+', _pattern)
+        # find all `#` symbols like `#`, `.../#` and replace with wildcard
+        # to end
         _pattern = re.sub('(?:^|(?<=/))#$', '.+$', _pattern)
         return _pattern
 
     try:
         _pattern = mqtt_pattern_to_regex(pattern)
         if '#' in _pattern:
-            logging.error(f"bad mqtt topic pattern `{pattern}`")
+            logging.error("bad mqtt topic pattern `%s`", pattern)
             return False
-        else:
-            return re.match(_pattern, topic) != None
+
+        return re.match(_pattern, topic) is not None
     except re.error:
-        logging.error(f"bad mqtt topic pattern `{pattern}`")
+        logging.error("bad mqtt topic pattern `%s`", pattern)
         return False
