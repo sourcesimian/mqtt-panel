@@ -97,3 +97,16 @@ def blob_hash(blob):
 
 def pad_string(msg, length, ch):
     return msg + (ch * (length - len(msg)))
+
+
+def validate_path(path: str) -> None:
+    """validate if the given path exists
+
+    Args:
+        path (str): the path to validate
+
+    Raises:
+        ValueError: if the path does not exist
+    """
+    if not os.path.exists(path):
+        raise ValueError(f'Invalid path: {path}')

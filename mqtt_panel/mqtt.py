@@ -1,9 +1,50 @@
 import logging
 import os.path
+import ssl
 import sys
+from typing import Dict
 
 import paho.mqtt.client
 import gevent
+
+from .util import validate_path
+
+
+def generate_mtls_context(config: Dict[str, str]):
+    """builds the SSLContext required for Mutual-TLS (mTLS)
+
+    Args:
+        config (Dict[str, str]): defines the mTLS configuration
+            cafile (str): path to the CA file used to verify the server
+            certfile (str): path to the certificate presented by this client
+                            for authentication
+            keyfile (str): path to the private-key presented by this client for
+                           authentication
+            keyfile_password (str): password used to decrypt the `keyfile`, or
+                                    `None`
+            protocols (List[str]): list of alpn protocols to use for the mTLS
+                                   handshake
+
+    Returns:
+        SSLContext: the SSLContext object to use for the client connection
+    """
+    ssl_context = ssl.create_default_context()
+    ssl_context.set_alpn_protocols(config.get("protocols", []))
+
+    if config.get("cafile", False):
+        validate_path(config.get("cafile"))
+        ssl_context.load_verify_locations(cafile=config.get("cafile"))
+
+    if config.get("certfile", False) and config.get("keyfile", False):
+        validate_path(config.get("certfile"))
+        validate_path(config.get("keyfile"))
+        ssl_context.load_cert_chain(
+            certfile=config.get("certfile"),
+            keyfile=config.get("keyfile"),
+            password=config.get("keyfile_password", None)
+        )
+
+    return ssl_context
 
 
 class Mqtt:
@@ -31,9 +72,20 @@ class Mqtt:
         self._client.on_disconnect = self._on_disconnect
         self._client.on_message = self._on_message
 
-        username = self._c.get('username', None)
-        password = self._c.get('password', None)
-        self._client.username_pw_set(username, password)
+        _mqtt_auth = self._c.get('auth')
+        if _mqtt_auth is None or _mqtt_auth.get('type') == 'none':
+            logging.info('no mqtt auth defined')
+        elif _mqtt_auth.get('type') == 'basic':
+            logging.info('setting up basic auth')
+            username = self._c.get('username', None)
+            password = self._c.get('password', None)
+            self._client.username_pw_set(username, password)
+        elif _mqtt_auth.get('type') == 'mtls':
+            logging.info('setting up mtls mqtt auth')
+            mtls_context = generate_mtls_context(_mqtt_auth)
+            self._client.tls_set_context(mtls_context)
+        else:
+            logging.warning('failed to determine mqtt auth settings')
 
         connect = {
             'host': self._c.get('host', '127.0.0.1'),
