@@ -11,7 +11,7 @@ class WSHandler:
         self._service = service
         self._session = session
         self._ws = ws
-        self.client_id = f'{client_env["REMOTE_ADDR"]}:{client_env["REMOTE_PORT"]}'
+        self.client_id = f'{client_env["REMOTE_ADDR"]}:{client_env["REMOTE_PORT"]}:{session.username}'
         self._app_identity = app_identity
         self._active_widgets = []
 
@@ -23,23 +23,21 @@ class WSHandler:
             rx = self._ws.receive()
             if not rx:
                 continue
-            logging.debug('(%s) Rx: %s', self.client_id, rx)
             blob_list = json.loads(rx)
             for blob in blob_list:
                 try:
                     blob_id = blob['id']
                     if blob_id == 'register':
+                        logging.debug('(%s) Rx register: %s', self.client_id, rx)
                         self.register(blob['widgets'])
                     elif blob_id.startswith(Widget.id_prefix):
                         widget = self._service.get_widget(blob_id)
                         if not widget:
                             continue
+                        logging.info('(%s) Rx widget: %s', self.client_id, blob)
                         widget.on_widget(blob)
-                        # self._send([{'id': 'keepalive'}])
-                        # if widget.on_widget(blob):
-                        #     self._service.notify_all([widget.blob()])
-                        # else:
-                        #     self._send(widget.blob())
+                    else:
+                        logging.warning('(%s) Unhandled rx: %s', self.client_id, rx)
                 except Exception:       # pylint: disable=W0703
                     logging.exception('(%s) Handling message blob "%s"', self.client_id, blob)
         logging.debug('(%s) Disconnect', self.client_id)

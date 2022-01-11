@@ -1,3 +1,4 @@
+import logging
 from mqtt_panel.web.widget.widget import Widget
 
 
@@ -14,6 +15,7 @@ class Iframe(Widget):
             self._mqtt.subscribe(topic, self._on_mqtt)
 
     def _on_mqtt(self, payload, _timestamp):
+        logging.info("{%s} Rx MQTT: %s", self.id, payload)
         if payload == self._src:
             return
         self._src = payload
@@ -26,7 +28,10 @@ class Iframe(Widget):
         }
 
     def _html(self, fh):
-        self._write_render(fh, '<iframe src=""')
+        refresh = self._c.get('refresh', '')
+        if refresh:
+            refresh = f' data-refresh="{refresh}"'
+        self._write_render(fh, f'<iframe src=""{refresh}')
         for key, value in self._c.get('attr', []).items():
             if key == 'src':
                 continue

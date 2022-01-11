@@ -1,0 +1,76 @@
+:root {
+    --menubar-width: 175px;
+    --menubar-z-index: 96;
+}
+
+.menubar {
+    position: fixed;
+    top: var(--titlebar-height);
+    left: 100vw;
+    height: 100vh;
+    width: var(--menubar-width);
+    z-index: var(--menubar-z-index);
+    vertical-align: top;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    transition: .3s;
+    background-color: var(--menubar-bg);
+}
+
+.menubar-show {
+    left: calc(100vw - var(--menubar-width));
+}
+
+.menubar-overlay {
+    position: fixed;
+    top: var(--titlebar-height);
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: calc(var(--menubar-z-index) - 1);
+    background-color: var(--menubar-overlay-bg);
+}
+
+
+.menubar .material-icons {
+    font-size: 1em;
+}
+
+.menubar ul {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+    border-radius: 0.25rem;
+}
+
+.menubar li a {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    text-decoration: none;
+    background-color: var(--menubar-bg);
+}
+
+.menubar li:hover a {
+    color: var(--link-color-active);
+    background-color: var(--menubar-bg-hover);
+    cursor: pointer;
+}
+
+.menubar li:active a {
+    background-color: var(--menubar-bg-active);
+}
+
+.menubar-link.active {
+    background-color: var(--menubar-bg-active);
+}
+
+.menubar-version {
+    margin: 10px;
+}
+

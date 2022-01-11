@@ -13,9 +13,8 @@ class Button(Widget):
         pass
 
     def on_widget(self, blob):
-        logging.debug("{%s} Rx widget: %s", self.id, blob)
-
         payload = self._c['payload']
+        logging.info('{%s} Publish "%s" %s', self.id, self._c['publish'], payload)
         self._mqtt.publish(self._c['publish'], payload,
                            retain=self._c.get('retain', False), qos=self._c.get('qos', 1))
 
@@ -42,7 +41,7 @@ class Button(Widget):
 
         self._write_render(fh, '''\
             <div class="value"{ctx.confirm}>
-              <span class="material-icons"{ctx.color}>{ctx.icon}</span>
-              <span{ctx.color}>{ctx.text}</span>
+                <span class="material-icons"{ctx.color}>{ctx.icon}</span>
+                <span{ctx.color}>{ctx.text}</span>
             </div>
         ''', {'ctx': ctx}, indent=4)

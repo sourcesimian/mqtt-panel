@@ -1,3 +1,4 @@
+import logging
 from mqtt_panel.web.widget.widget import Widget, WidgetCtx, WidgetBlob
 
 
@@ -11,11 +12,12 @@ class Text(Widget):
         self._mqtt.subscribe(self._c['subscribe'], self._on_mqtt)
 
     def _on_mqtt(self, payload, _timestamp):
+        logging.info("{%s} Rx MQTT: %s", self.id, payload)
         self.set_value(payload)
 
     def _blob(self):
         return WidgetBlob({
-            'text': self.value or '',
+            'value': self.value or '',
         })
 
     def _html(self, fh):
@@ -27,5 +29,5 @@ class Text(Widget):
             ctx.color = f' style="color:{ctx.color}"'
 
         self._write_render(fh, '''\
-            <div class="text"{ctx.color}>{blob.text}</div>
+            <div class="text"{ctx.color}>{blob.value}</div>
         ''', {'ctx': ctx, 'blob': blob}, indent=4)

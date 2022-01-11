@@ -1,0 +1,10 @@
+.panel {
+    display: flex;
+    flex-direction: row;
+    align-content: space-around;
+    width: 100%;
+    /* margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    margin-right: 10px; */
+}

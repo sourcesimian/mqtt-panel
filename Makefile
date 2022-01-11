@@ -38,12 +38,14 @@ push: docker-armv6 docker-amd64
 	docker push ${REPOTAG}-amd64
 	docker push ${REPOTAG}-armv6
 
+	docker manifest rm ${REPOTAG} &>/dev/null || true
 	docker manifest create \
 	    ${REPOTAG} \
 	    --amend ${REPOTAG}-amd64 \
 	    --amend ${REPOTAG}-armv6
 	docker manifest push ${REPOTAG}
 
+	docker manifest rm ${LATEST} &>/dev/null || true
 	docker manifest create \
 	    ${LATEST} \
 	    --amend ${REPOTAG}-amd64 \

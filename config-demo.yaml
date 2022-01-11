@@ -22,31 +22,6 @@ cache:
   root: data/cache
 
 panels:
-  - title: Widgets
-    icon: widgets
-    groups:
-      - widget_button_text
-      - widget_light
-      - widget_switch
-      - widget_gauge
-      - widget_select
-      - widget_image
-      - widget_iframe
-
-  - title: Play
-    icon: toys
-    groups:
-    - play_buttons
-    - play_switch_light
-    - play_switch_multi
-    - play_feedback
-    - play_gauge
-    - play_reuse
-    - play_select
-    # - play_dropdown
-    - play_image
-    - play_iframe
-
   - title: Example
     icon: home
     groups:
@@ -55,6 +30,37 @@ panels:
     - example_outside
     - example_irrigation
     - example_pool
+    - example_audio
+    - example_cameras
+    - example_image
+
+  - title: Widgets
+    icon: widgets
+    groups:
+      - widget_button_text
+      - widget_light
+      - widget_switch
+      - widget_gauge
+      - widget_select
+      - widget_slider
+      - widget_slider_live
+      - widget_image
+      - widget_iframe
+      - widget_reuse
+
+  # - title: Play
+  #   icon: toys
+  #   groups:
+  #   - play_buttons
+  #   - play_switch_light
+  #   - play_switch_multi
+  #   - play_feedback
+  #   - play_gauge
+  #   - play_reuse
+  #   - play_select
+  #   - play_image
+  #   - play_iframe
+
 
 groups:
   - title: Mood
@@ -70,7 +76,7 @@ groups:
       color: "#b81212"
       confirm: "Switch all off?"
       qos: 1
-      retain: False
+      retain: True
 
     - title: Outside
       type: button
@@ -80,9 +86,9 @@ groups:
       icon: power_settings_new
       color: "#008000"
       qos: 1
-      retain: False
+      retain: True
 
-    - title: Mood
+    - title: Event
       type: button
       publish: example/mood/lights
       payload: EARLY
@@ -90,25 +96,17 @@ groups:
       icon: nights_stay
       color: "#008000"
       qos: 1
-      retain: False
+      retain: True
+
+    - title: Mode
+      type: text
+      subscribe: example/mood/lights
+      color: "#FFF"
 
   # ---------------------------------------------------------------------------
   - title: Inside
     name: example_inside
     widgets:
-    - title: Cantilever Lamp
-      type: switch
-      publish: example/cantilever-light
-      subscribe: example/cantilever-light
-      values:
-      - payload: OFF
-        text: off
-        icon: light
-      - payload: ON
-        text: ON
-        icon: light
-      qos: 1
-      cache: True
 
     - title: Stairs
       type: switch
@@ -124,52 +122,10 @@ groups:
       qos: 1
       cache: True
 
-    - title: Standing Lamp
-      type: switch
-      publish: example/standing-light
-      subscribe: example/standing-light
-      values:
-      - payload: OFF
-        text: off
-        icon: light
-      - payload: ON
-        text: ON
-        icon: light
-      qos: 1
-      cache: True
-
-    - title: Director Lamp
-      type: switch
-      publish: example/director-light
-      subscribe: example/director-light
-      values:
-      - payload: OFF
-        text: off
-        icon: light
-      - payload: ON
-        text: ON
-        icon: light
-      qos: 1
-      cache: True
-
     - title: Kitchen
       type: switch
       publish: example/kitchen-light
       subscribe: example/kitchen-light
-      values:
-      - payload: OFF
-        text: off
-        icon: light
-      - payload: ON
-        text: ON
-        icon: light
-      qos: 1
-      cache: True
-
-    - title: Kitchen Counter
-      type: switch
-      publish: example/kitchen-counter-light
-      subscribe: example/kitchen-counter-light
       values:
       - payload: OFF
         text: off
@@ -198,20 +154,6 @@ groups:
       type: switch
       publish: example/garage-light
       subscribe: example/garage-light
-      values:
-      - payload: OFF
-        text: off
-        icon: light
-      - payload: ON
-        text: ON
-        icon: light
-      qos: 1
-      cache: True
-
-    - title: Garage Atrium
-      type: switch
-      publish: example/garage-atrium-light
-      subscribe: example/garage-atrium-light
       values:
       - payload: OFF
         text: off
@@ -337,7 +279,7 @@ groups:
       retain: True
 
     - title: Source
-      type: switch
+      type: select
       publish: example/irrigation-source
       subscribe: example/irrigation-source
       values:
@@ -438,405 +380,141 @@ groups:
       qos: 1
       retain: True
 
-
-  # --- group: Switch & Light
-  - title: Switch & Light
-    name: play_switch_light
+  - title: Audio
+    name: example_audio
     widgets:
-    - title: Switch
-      type: switch
-      publish: light/state
-      subscribe: light/state
-      values:
-      - text: "Off"
-        payload: "false"
-      - text: "On"
-        payload: "true"
-      qos: 1
-      cache: True
 
-    - title: Light
-      type: light
-      subscribe: light/state
-      values:
-        - payload: "false"
-          text: OFF
-        - payload: "true"
-          text: ON
-          color: yellow
-
-    - title: "topic: state"
-      type: text
-      subscribe: light/state
-      color: "#ffffff"
-
-  # --- group: Feedback ---
-  - title: Command/Status Feedback
-    name: play_feedback
-    widgets:
-    - title: Command
-      type: switch
-      publish: feedback/command
-      subscribe: feedback/status
-      values:
-      - text: "Auto"
-        payload: "AUTO"
-        icon: sync
-        color: '#40F0F0'
-      - text: "Manual"
-        payload: "MANUAL"
-        icon: back_hand
-        color: '#F0F080'
-      qos: 1
-      cache: True
-
-    - title: "topic: command"
-      type: text
-      subscribe: feedback/command
-      color: "#ffffff"
-
-    - title: "topic: status"
-      type: text
-      subscribe: feedback/status
-      color: "#ffffff"
-
-    - title: Status
-      type: button
-      publish: feedback/status
-      text: "Auto"
-      payload: "AUTO"
-      icon: sync
-      color: '#c46812'
-      qos: 1
-      cache: True
-
-    - title: Status
-      type: button
-      publish: feedback/status
-      text: "Manual"
-      payload: "MANUAL"
-      icon: back_hand
-      color: '#c46812'
-      qos: 1
-      cache: True
-
-    - title: Status
-      type: button
-      publish: feedback/status
-      text: "Garbage"
-      payload: "GaRbAGe"
-      icon: warning
-      color: '#c46812'
-      qos: 1
-      cache: True
-
-  # --- group: Buttons ---
-  - title: Buttons
-    name: play_buttons
-    widgets:
-    - title: Play
-      type: button
-      publish: button/audio
-      text: "Play"
-      payload: "PLAY"
-      icon: play_arrow
-      color: '#40F040'
-      qos: 1
-      cache: True
-
-    - title: Stop
-      type: button
-      publish: button/audio
-      text: "Stop"
-      payload: "STOP"
-      icon: stop
-      color: '#4040F0'
-      qos: 1
-      cache: True
-
-    - title: Record
-      type: button
-      publish: button/audio
-      text: "Record"
-      payload: "RECORD"
-      icon: mic
-      color: '#F04040'
-      qos: 1
-      cache: True
-      confirm: "Do you want to record?"
-
-    - title: "topic: audio"
-      type: text
-      subscribe: button/audio
-      color: "#ffffff"
-
-  # --- group: Multi state switch ---
-  - title: Switch & Light - Multi State 
-    name: play_switch_multi
-    widgets:
-    - title: Switch
-      type: switch
-      publish: multi/switch
-      subscribe: multi/switch
-      values:
-      - text: "One"
-        payload: "11111"
-        color: cyan
-        icon: home
-      - text: "Two"
-        payload: "22222"
-        color: green
-        icon: apartment
-      - text: "Three"
-        payload: "33333"
-        color: orange
-        icon: villa
-      - text: "Four"
-        payload: "44444"
-        color: magenta
-        icon: warehouse
-      qos: 1
-      cache: True
-
-    - title: Light
-      type: light
-      subscribe: multi/switch
-      values:
-        - payload: "11111"
-          text: ONE
-          color: magenta
-          icon: pets
-        - payload: "22222"
-          text: TWO
-          color: yellow
-          icon: park
-        - payload: "33333"
-          text: THREE
-          color: green
-          icon: spa
-        - payload: "44444"
-          text: FOUR
-          color: cyan
-          icon: water
-      qos: 1
-      cache: True
-
-    - title: "topic: switch"
-      type: text
-      subscribe: multi/switch
-      color: "#ffffff"
-      qos: 1
-      cache: True
-
-    - title: Status
-      type: button
-      publish: multi/switch
-      text: "Garbage"
-      payload: "GaRbAgE"
-      icon: warning
-      color: '#c46812'
-
-  # --- group: Image ---
-  - title: Image
-    name: play_image
-    widgets:
-    - title: Select Image
-      type: select
-      publish: image/src
-      values:
-      - text: "Ireland"
-        payload: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Glendalough.jpg/1920px-Glendalough.jpg"
-      - text: "Venice"
-        payload: "https://upload.wikimedia.org/wikipedia/commons/1/1d/License_Free_Photo_-_Creative_Commons_by_gnuckx_%2811645325224%29.jpg"
-      - text: "Cape Town"
-        payload: "https://upload.wikimedia.org/wikipedia/commons/d/dc/Table_Mountain_DanieVDM.jpg"
+    - title: Volume
+      type: slider
+      publish: example/volume
+      subscribe: example/volume
+      live: True
+      ranges:
+      - range: [0, 10]
+        text: "Shhh"
+        icon: volume_off
+        color: "#00c000"
+      - range: [10, 30]
+        text: "Chill"
+        icon: volume_mute
+        color: "#02b002"
+      - range: [30, 70]
+        text: "Vibe"
+        icon: volume_down
+        color: "#82b002"
+      - range: [70, 90]
+        text: "Party"
+        icon: volume_up
+        color: "#b08a02"
+      - range: [90, 100]
+        text: "Ouch"
+        icon: volume_up
+        color: "#b03c02"
       qos: 1
       retain: True
+
+    - title: Sound
+      type: gauge
+      subscribe: example/volume
+      ranges:
+      - range: [0, 10]
+        text: "Quiet"
+        icon: volume_off
+        color: "#00c000"
+      - range: [10, 30]
+        text: "Gentle"
+        icon: volume_mute
+        color: "#02b002"
+      - range: [30, 70]
+        text: "Medium"
+        icon: volume_down
+        color: "#82b002"
+      - range: [70, 90]
+        text: "Noisy"
+        icon: volume_up
+        color: "#b08a02"
+      - range: [90, 100]
+        text: "Loud"
+        icon: volume_up
+        color: "#b03c02"
+      qos: 1
       cache: True
 
-    - title: Image
-      type: image
-      subscribe: image/src
-      height: 300px
-
-  # --- group: Iframe ---
-  - title: Iframe
-    name: play_iframe
+  - title: Cameras
+    name: example_cameras
     widgets:
-    - title: Select Content
+    - title: Source
       type: select
-      publish: iframe/src
+      publish: example/camera
       values:
-      - text: "Yes Minister"
-        payload: "https://www.youtube.com/embed/j4tXPx5Bk5w"
+      - text: "Cape Town"
+        payload: "https://www.i-traffic.co.za/map/Cctv/WC%20CCTV%20N1%20803--4"
+        icon: videocam
+        color: cyan
+      - text: "Huguenot Tunnel"
+        payload: "https://www.i-traffic.co.za/map/Cctv/WC%20CCTV%20N1%20146--4"
+        icon: videocam
+        color: magenta
+      - text: "Sir Lowry's Pass"
+        payload: "https://www.i-traffic.co.za/map/Cctv/WC%20CCTV%20N2%20269--4"
+        icon: videocam
+        color: green
       - text: "Other"
         payload: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+        icon: videocam
+        confirm: "Select Other?"
       qos: 1
       retain: True
       cache: True
 
     - title: Iframe
       type: iframe
-      subscribe: iframe/src
+      subscribe: example/camera
+      refresh: 30
       attr:
-        src: https://www.example.com
-        width: 480px
-        height: 315px
-        title: YouTube video player
-        allow: accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture
-        allowfullscreen:
+        src:
+        width: 320px
+        height: 240px
 
-  # --- group: Gauge ---
-  - title: Gauge
-    name: play_gauge
+  # --- group: Image ---
+  - title: Image
+    name: example_image
     widgets:
-    - title: Health
-      type: switch
-      publish: gauge/health
-      subscribe: gauge/health
-      values:
-      - text: "Poor"
-        payload: "10"
-        icon: battery_alert
-        color: "#b03c02"
-      - text: "Moderate"
-        payload: "40"
-        icon: battery_alert
-        color: "#b08a02"
-      - text: "Good"
-        payload: "60"
-        icon: battery_charging_full
-        color: "#82b002"
-      - text: "Excellent"
-        payload: "81"
-        icon: battery_charging_full
-        color: "#02b002"
-      qos: 1
-      cache: True
-
-    - title: Health
-      type: gauge
-      subscribe: gauge/health
-      icon: health_and_safety
-      ranges:
-      - range: [0, 20]
-        text: Poor
-        color: "#F00000"
-        icon: warning
-      - range: [20, 50]
-        text: Moderate
-        color: "#008000"
-      - range: [50, 80]
-        text: Good
-        color: "#00C000"
-      - range: [80, 100]
-        text: Excellent
-        color: "#00F000"
-      cache: True
-
-    - title: "topic: health"
-      type: text
-      subscribe: gauge/health
-      color: "#ffffff"
-
-  # -- group: Reuse
-  - title: Widget Reuse
-    name: play_reuse
-    widgets:
-    - title: Ref SW1
-      ref: sw1
-      type: switch
-      publish: reuse/sw1
-      subscribe: reuse/sw1
-      values:
-      - text: "No"
-        payload: "OFF"
-        color: '#F04040'
-      - text: "Yes"
-        payload: "ON"
-        color: '#40F000'
-      qos: 1
-      cache: True
-
-    - ref: sw1
-    - ref: sw1
-
-  # --- group: Select ---
-  - title: Select
-    name: play_select
-    widgets:
-    - title: Select
+    - title: Source
       type: select
-      publish: select/state
-      subscribe: select/set
+      publish: example/image/src
       values:
-      - payload: CLOSED
-        text: Close
-      - payload: FRESH
-        text: Fresh
-      - payload: FILTER
-        text: Filter
-      qos: 1
-      retain: True
-
-    - title: "topic: select/state"
-      type: text
-      subscribe: select/state
-      color: "#40c0c0"
-
-    - title: Set
-      type: switch
-      publish: select/set
-      subscribe: select/set
-      values:
-      - payload: "FRESH"
-        text: "FRESH"
-      - payload: "CLOSED"
-        text: "CLOSED"
-      - payload: "FILTER"
-        text: "FILTER"
-      - payload: "Garbage"
-        text: "GaRbAgE"
+      - text: "Cape Town"
+        payload: "https://upload.wikimedia.org/wikipedia/commons/d/dc/Table_Mountain_DanieVDM.jpg"
+        icon: image
+      - text: "Venice"
+        payload: "https://upload.wikimedia.org/wikipedia/commons/1/1d/License_Free_Photo_-_Creative_Commons_by_gnuckx_%2811645325224%29.jpg"
+        icon: image
+      - text: "Ireland"
+        payload: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Glendalough.jpg/1920px-Glendalough.jpg"
+        icon: image
       qos: 1
       retain: True
       cache: True
 
-  # --- group: Dropdown ---
-  # - title: Dropdown
-  #   name: play_dropdown
-  #   widgets:
-  #   - title: Dropdown Input
-  #     type: dropdown
-  #     publish: select/set
-  #     subscribe: select/state
-  #     values:
-  #     - payload: CLOSED
-  #       text: Close
-  #     - payload: FRESH
-  #       text: Fresh
-  #     - payload: FILTER
-  #       text: Filter
-  #     qos: 1
-  #     retain: True
-
-  #   - title: "topic: select/state"
-  #     type: text
-  #     subscribe: select/state
-  #     color: "#c040c0"
+    - title: Image
+      type: image
+      subscribe: example/image/src
+      height: 300px
 
   # --- group: Widget Button and Text ---
   - title: Buttons & Text
     name: widget_button_text
     widgets:
 
-    - title: Button
+    - title: In
       type: button
       publish: widget/text
       text: "Hello"
       payload: "HELLO"
       qos: 1
 
-    - title: Button
+    - title: In
       type: button
       publish: widget/text
       text: "World"
@@ -852,18 +530,26 @@ groups:
   - title: Light
     name: widget_light
     widgets:
-    - title: Send
+    - title: In
       type: button
       publish: widget/light
       text: "On"
       payload: "true"
       qos: 1
 
-    - title: Send
+    - title: In
       type: button
       publish: widget/light
       text: "Off"
       payload: "false"
+      qos: 1
+
+    - title: In
+      type: button
+      publish: widget/light
+      text: "Other"
+      payload: "other"
+      confirm: "Really?"
       qos: 1
 
     - title: Light
@@ -880,10 +566,32 @@ groups:
   - title: Switch
     name: widget_switch
     widgets:
+    - title: In
+      type: button
+      publish: widget/switch/rx
+      text: "On"
+      payload: "true"
+      qos: 1
+
+    - title: In
+      type: button
+      publish: widget/switch/rx
+      text: "Off"
+      payload: "false"
+      qos: 1
+
+    - title: In
+      type: button
+      publish: widget/switch/rx
+      text: "Other"
+      payload: "other"
+      confirm: "Really?"
+      qos: 1
+
     - title: Switch
       type: switch
-      publish: widget/switch
-      subscribe: widget/switch
+      subscribe: widget/switch/rx
+      publish: widget/switch/tx
       values:
       - text: "Off"
         payload: "false"
@@ -892,79 +600,196 @@ groups:
       qos: 1
       cache: True
 
-    - title: "Value"
+    - title: "Out"
       type: text
-      subscribe: widget/switch
+      subscribe: widget/switch/tx
       cache: True
 
   # --- group: Widget Gauge ---
   - title: Gauge
     name: widget_gauge
     widgets:
-    - title: Switch
-      type: switch
+    - title: In
+      type: slider
       publish: widget/gauge
       subscribe: widget/gauge
-      values:
-      - text: "10"
-        payload: "10"
-        icon: battery_std
-        color: "#b03c02"
-      - text: "40"
-        payload: "40"
-        icon: battery_std
-        color: "#b08a02"
-      - text: "60"
-        payload: "60"
-        icon: battery_std
-        color: "#82b002"
-      - text: "80"
-        payload: "81"
-        icon: battery_std
-        color: "#02b002"
+      ranges:
+      - range: [-50, 50]
       qos: 1
-      cache: True
 
     - title: Gauge
       type: gauge
       subscribe: widget/gauge
       icon: health_and_safety
       ranges:
-      - range: [0, 20]
-        text: Poor
-        color: "#F00000"
+      - range: [-50, -20]
+        text: Nasty
+        color: "blue"
         icon: warning
-      - range: [20, 50]
-        text: Moderate
-        color: "#008000"
-      - range: [50, 80]
-        text: Good
-        color: "#00C000"
-      - range: [80, 100]
-        text: Excellent
-        color: "#00F000"
+      - range: [-20, 5]
+        text: Skiing
+        color: "green"
+        icon: downhill_skiing
+      - range: [5, 20]
+        text: Reading
+        color: "yellow"
+        icon: import_contacts
+      - range: [20, 35]
+        text: Beach
+        color: "orange"
+        icon: beach_access
+      - range: [35, 50]
+        text: Hot
+        color: "red"
+        icon: wb_sunny
       cache: True
+
+  # --- group: Widget Slider ---
+  - title: Slider
+    name: widget_slider
+    widgets:
+    - title: In
+      type: slider
+      publish: widget/slider/rx
+      subscribe: widget/slider/rx
+      ranges:
+      - range: [0, 100]
+      qos: 1
+
+    - title: Slider
+      type: slider
+      publish: widget/slider/tx
+      subscribe: widget/slider/rx
+      ranges:
+      - range: [0, 30]
+        text: "Empty"
+        icon: battery_std
+        color: "#b03c02"
+      - range: [30, 60]
+        text: "Low"
+        icon: battery_std
+        color: "#b08a02"
+      - range: [60, 80]
+        text: "Medium"
+        icon: battery_std
+        color: "#82b002"
+      - range: [80, 100]
+        text: "Good"
+        icon: battery_std
+        color: "#02b002"
+      qos: 1
+      cache: True
+
+    - title: Out
+      type: text
+      subscribe: widget/slider/tx
+      icon: health_and_safety
+
+  # --- group: Widget Slider (live) ---
+  - title: Slider (live)
+    name: widget_slider_live
+    widgets:
+    - title: In
+      type: slider
+      publish: widget/slider_live/rx
+      subscribe: widget/slider_live/rx
+      live: True
+      ranges:
+      - range: [0, 100]
+      qos: 1
+
+    - title: Slider
+      type: slider
+      publish: widget/slider_live/tx
+      subscribe: widget/slider_live/rx
+      live: True
+      ranges:
+      - range: [0, 30]
+        text: "Empty"
+        icon: battery_std
+        color: "#b03c02"
+      - range: [30, 60]
+        text: "Low"
+        icon: battery_std
+        color: "#b08a02"
+      - range: [60, 80]
+        text: "Medium"
+        icon: battery_std
+        color: "#82b002"
+      - range: [80, 100]
+        text: "Good"
+        icon: battery_std
+        color: "#02b002"
+      qos: 1
+      cache: True
+
+    - title: Out
+      type: text
+      subscribe: widget/slider_live/tx
+      icon: health_and_safety
 
   # --- group: Image ---
   - title: Select
     name: widget_select
     widgets:
+
+    - title: In
+      type: button
+      publish: widget/select/rx
+      text: "Ireland"
+      payload: "Guinness"
+      qos: 1
+
+    - title: In
+      type: button
+      publish: widget/select/rx
+      text: "Venice"
+      payload: "Gondola"
+      qos: 1
+
+    - title: In
+      type: button
+      publish: widget/select/rx
+      text: "Cape Town"
+      payload: "Mountain"
+      qos: 1
+
+    - title: In
+      type: button
+      publish: widget/select/rx
+      text: "Other"
+      payload: "other"
+      confirm: "Really?"
+      qos: 1
+
     - title: Select
       type: select
-      publish: widget/select
+      subscribe: widget/select/rx
+      publish: widget/select/tx
       values:
       - text: "Ireland"
         payload: "Guinness"
+        icon: sports_bar
+        color: green
       - text: "Venice"
         payload: "Gondola"
+        icon: rowing
+        color: red
       - text: "Cape Town"
         payload: "Mountain"
+        icon: landscape
+        color: cyan
+      - text: "Confirm"
+        payload: "confirm"
+        icon: help
+        color: orange
+        confirm: "Really?"
       qos: 1
       cache: True
 
-    - title: "Value"
+    - title: "Out"
       type: text
-      subscribe: widget/select
+      subscribe: widget/select/tx
       cache: True
 
 
@@ -988,3 +813,25 @@ groups:
         width: 480px
         height: 315px
         title: Example
+
+  # -- group: Reuse
+  - title: Widget Re-use
+    name: widget_reuse
+    widgets:
+    - title: Ref SW1
+      ref: sw1
+      type: switch
+      publish: widget/reuse/sw1
+      subscribe: widget/reuse/sw1
+      values:
+      - text: "No"
+        payload: "OFF"
+        color: '#F04040'
+      - text: "Yes"
+        payload: "ON"
+        color: '#40F000'
+      qos: 1
+      cache: True
+
+    - ref: sw1
+    - ref: sw1

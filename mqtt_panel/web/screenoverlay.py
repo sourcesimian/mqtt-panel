@@ -7,8 +7,8 @@ class ScreenOverlay(Component):
 
     def _body(self, fh):
         self._write_render(fh, '''\
-            <div id="screen-overlay" class="d-none">
-                <div class="alert d-none noselect">Alert</div>
+            <div id="screen-overlay" class="d-none noselect">
+                <div class="alert d-none">Alert</div>
                 <div class="spinner d-none"></div>
             </div>
         ''', indent=self._indent)

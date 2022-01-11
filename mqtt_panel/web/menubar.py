@@ -26,7 +26,7 @@ class MenuBar(Component):
         self._write_render(fh, '''\
         <div class="menubar-overlay d-none">
         </div>
-        <div class="menubar">
+        <div class="menubar noselect">
           <ul>
         ''', indent=self._indent)
 

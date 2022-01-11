@@ -18,7 +18,7 @@ class Image(Widget):
             self._mqtt.subscribe(subscribe, self._on_mqtt)
 
     def _on_mqtt(self, payload, _timestamp):
-        logging.debug("Image [%s] on_mqtt: %s", self.id, payload)
+        logging.info("{%s} Rx MQTT: %s", self.id, payload)
 
         if not payload.startswith(('http://', 'https://')):
             logging.warning('Ignoring image payload: %s', payload)

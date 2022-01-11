@@ -1,4 +1,4 @@
-Display a `<select>` box from which you can publish a list of values. Will update to matched payloads if subscribed to a topic.
+Display some text, an icon and color when the defined payloads are received from the subscribed topic. When tapped, shows a list of the other values which can be published.
 ```
     - title: <string>       # Title text
       type: select          # Widget type
@@ -6,7 +6,9 @@ Display a `<select>` box from which you can publish a list of values. Will updat
       subscribe: <topic>    # optional: MQTT topic to listen on
       values:
       - payload: <string>     # Payload to send and match
-        text: <string>        # Text shown in select
+        text: <string>        # optional: Text shown
+        icon: <icon>          # optional: Icon shown
+        color: <color>        # optional: Color of icon and text
       ... (repeat)
 ```
 
@@ -19,6 +21,10 @@ Example:
       values:
       - text: "Venice"
         payload: "Gondola"
+        icon: rowing
+        color: cyan
       - text: "Cape Town"
         payload: "Mountain"
+        icon: landscape
+        color: green
 ```

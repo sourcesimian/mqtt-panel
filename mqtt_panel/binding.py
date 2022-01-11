@@ -56,5 +56,5 @@ class Binding:
     def app(self, out):
         self._app.html(out)
 
-    def websocket(self, session, ws, env):
+    def web_socket(self, session, ws, env):
         self._service.web_socket(session, ws, env, self._app.identity)

@@ -25,14 +25,12 @@ $(function() {
 
         var confirm = $(this).find('.value').data('confirm');
         if (confirm) {
-            var decline = function () {
-                $(This).trigger('release');
-            };
-    
             $('#modal').trigger('confirm', [{
                 message: confirm,
                 proceed: send,
-                decline: decline,
+                cancel: function () {
+                    $(This).trigger('release');
+                },
                 timeout: 7000,
             }]);
         } else {

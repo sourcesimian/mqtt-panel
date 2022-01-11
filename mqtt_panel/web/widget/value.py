@@ -13,6 +13,7 @@ class Value(Widget):
         self._mqtt.subscribe(self._c['subscribe'], self._on_mqtt)
 
     def _on_mqtt(self, payload, _timestamp):
+        logging.info("{%s} Rx MQTT: %s", self.id, payload)
 
         try:
             txf = self._c.get('transform', None)

@@ -19,7 +19,7 @@ class Server:
         self._c = config
         self._auth = auth
         self._binding = binding
-        log_level = self._c.get('log-level', None)
+        log_level = self._c.get('logging-level', None)
         if log_level:
             logging.getLogger('geventwebsocket.handler').setLevel(log_level)
 
@@ -111,7 +111,7 @@ class Server:
 
         if path == ('ws',):
             if env.get('HTTP_UPGRADE', None) == 'websocket':
-                self._binding.websocket(session, env["wsgi.websocket"], env)
+                self._binding.web_socket(session, env["wsgi.websocket"], env)
                 return []
             start_response('400 Bad Request', [('Content-Type', 'text/html')])
             return [b'<h1>Bad Request</h1>']
@@ -138,11 +138,6 @@ class Server:
         if path == ('manifest.json',):
             start_response('200 OK', [('Content-Type', 'application/json')])
             with open('./resources/manifest.json', encoding="utf8") as fh:
-                return [fh.read().encode()]
-
-        if path == ('style.css',):
-            start_response('200 OK', [('Content-Type', 'text/css')])
-            with open('./resources/style.css', encoding="utf8") as fh:
                 return [fh.read().encode()]
 
         start_response('404 Not Found', [('Content-Type', 'text/html')])

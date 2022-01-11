@@ -1,71 +1,45 @@
-import logging
-
-from mqtt_panel.web.widget.widget import Widget
+from mqtt_panel.web.widget.switch import Switch
 
 
-class Select(Widget):
+class Select(Switch):
     widget_type = 'select'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.default = Default
 
-        self._value = ''
-        self._text_map = {}
-        for blob in self._c['values']:
-            self._text_map[blob['payload']] = blob['text']
-
-    def open(self):
-        topic = self._c.get('subscribe', None)
-        if not topic:
-            topic = self._c.get('publish', None)
-        if topic:
-            self._mqtt.subscribe(topic, self._on_mqtt)
-        else:
-            logging.warning('No topic configured for "%s"', self.name)
-
-    @property
-    def _text(self):
-        try:
-            return self._text_map[self._value]
-        except KeyError:
-            return ''
-
-    def _on_mqtt(self, payload, _timestamp):
-        logging.debug("Select [%s] on_mqtt: %s", self.id, payload)
-        if payload == self._value:
-            return
-        self._value = payload
-        self._updated_now()
-        self._update_clients()
-
-    def _update_mqtt(self):
-        self._mqtt.publish(self._c['publish'], self._value,
-                           retain=self._c.get('retain', False),
-                           qos=self._c.get('qos', 0))
-
-    def on_widget(self, blob):
-        logging.debug("Select [%s] on_widget: %s", self.id, blob)
-        if blob['value'] == self._value:
-            return False
-        self._value = blob['value']
-        self._updated_now()
-        self._update_mqtt()
-        return True
-
-    def _blob(self):
-        return {
-            'value': self._value,
-        }
-
-    def _html(self, fh):
+    def _html_write(self, fh, ctx, state):
+        color = ''
+        if state.color:
+            color = f' data-color="{state.color}"'
         self._write_render(fh, '''\
-          <div class="value">
-            <select data-id="{self.id}">
-            <option selected></option>
-        ''', {'self': self}, indent=4)
-        for blob in self._c['values']:
-            fh.write(f'      <option value="{blob["payload"]}">{blob["text"]}</option>\n')
-        self._write_render(fh, '''\
-            </select>
-          </div>
-        ''', indent=4)
+            <div class="value-item value-{state.name}{ctx.show}"{ctx.confirm}{color} data-icon="{state.icon}" data-text="{state.text}" data-name="{state.name}">
+                <span class="material-icons"{ctx.color}>{state.icon}</span>
+                <span{ctx.color}>{state.text}</span>
+            </div>
+        ''', {'ctx': ctx, 'state': state, 'color': color}, indent=6)
+
+
+class Default:
+    _map = {
+        ('on', 'true'): ('toggle_on', '#52D017'),
+        ('off', 'false'): ('toggle_off', 'black'),
+        None: ('radio_button_unchecked', None),
+    }
+
+    @classmethod
+    def _lookup(cls, *keys):
+        for key in keys:
+            key = key.lower()
+            for k, v in cls._map.items():
+                if k and key in k:
+                    return v
+        return cls._map[None]
+
+    @classmethod
+    def icon(cls, *key):
+        return cls._lookup(*key)[0]
+
+    @classmethod
+    def color(cls, *key):
+        return cls._lookup(*key)[1]

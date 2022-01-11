@@ -4,55 +4,94 @@ class Modal {
         $('#modal').on('confirm', function(event, blob) {
             This.on_confirm(blob);
         });
+        document.addEventListener('keydown', function(event){
+            if(event.key === "Escape"){
+                $('#modal').find('.modal-close').click();
+            }
+        });
+
+        $('#modal').click(function() {
+            This.cancel();
+        });
+
+        this.on_cancel = null;
+        this.cancel_timeout = null;
+
+        $('#modal').on('close', function(event, blob) {
+            This.close(blob);
+        });
+        $('#modal').on('cancel', function(event, blob) {
+            This.cancel(blob);
+        });
+        $('#modal').on('show', function(event, html, on_cancel, timeout) {
+            This.show(html, on_cancel, timeout);
+        });
+    }
+
+    close() {
+        $('#modal').addClass('d-none');
+        $('#modal').empty();
+        if (this.cancel_timeout) {
+            clearTimeout(this.cancel_timeout);
+            this.cancel_timeout = null;
+        }
+    }
+
+    cancel() {
+        this.close();
+        if (this.on_cancel) {
+            this.on_cancel();
+        }
+    }
+
+    show(html, on_cancel, timeout) {
+        this.on_cancel = on_cancel;
+        let This = this;
+        if (timeout) {
+            this.cancel_timeout = setTimeout(function() {
+                    This.cancel();
+                }, timeout);
+        }
+        $('#modal').empty();
+        $('#modal').html(html);
+        $('#modal').removeClass('d-none');
     }
 
     on_confirm(blob) {
-        var window = $('<div></div>')
-        var close = $('<span id="modal-close" class="material-icons" style="float:right;">close</span>');
-        var panel = $('<div></div>')
+        let window = $('<div></div>')
+        let close = $('<span class="modal-close material-icons">close</span>');
+        let panel = $('<div></div>')
         window.append(close);
         window.append(panel);
 
-        panel.append($('<div id="modal-message">' + blob.message + '</div>'));
-        
-        var buttons = $('<div id="modal-buttons"></div>');
+        panel.append($('<div class="modal-message">' + blob.message + '</div>'));
 
-        var timeout = null;
-        if (blob.timeout) {
-            timeout = setTimeout(function() {
-                $('#modal').addClass('d-none');
-                blob.decline();
-            }, blob.timeout);
-        }
-        
-        var yes = $('<div><button>Yes</button></div>')
+        let buttons = $('<div class="modal-buttons"></div>');
+
+        let yes = $('<div><button>Yes</button></div>')
         $(yes).click(function() {
-            $('#modal').addClass('d-none');
-            clearTimeout(timeout);
+            $('#modal').trigger('close');
             blob.proceed();
         });
         buttons.append(yes);
 
         buttons.append($('<div style="width:30px"></div>'));
 
-        var no = $('<div><button>No</button></div>')
+        let no = $('<div><button>No</button></div>')
         buttons.append(no);
 
-        var decline = function() {
-            $('#modal').addClass('d-none');
-            clearTimeout(timeout);
-            blob.decline();
-        };
-
-        $('#modal').click(decline);
         $(window).click(function(event) {
             event.stopPropagation();
         });
-        $(close).click(decline);
-        $(no).click(decline);
+        $(close).click(function() {
+            $('#modal').trigger('cancel');
+        });
+        $(no).click(function() {
+            $('#modal').trigger('cancel');
+        });
         
         panel.append(buttons);
-        $('#modal').html(window);
-        $('#modal').removeClass('d-none');
+
+        $("#modal").trigger('show', [window, blob.cancel, blob.timeout]);
     }
 }

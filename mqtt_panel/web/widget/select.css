@@ -1,0 +1,20 @@
+#modal .modal-select {
+    flex-direction: column;
+}
+
+#modal .modal-select > div {
+    position: relative;
+    font-size: 2em;
+    flex-grow: 1;
+    justify-content: space-between;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    border-radius: 0.25rem;
+    background-color: var(--widget-bg);
+    margin: 3px;
+    padding: 7px;
+    overflow: hidden;
+}
+
+#modal .modal-select > div:hover {
+    cursor: pointer;
+}

@@ -2,7 +2,7 @@ import logging
 import time
 
 from mqtt_panel.web.webbase import WebBase
-from mqtt_panel.util import write_javascript
+from mqtt_panel.util import write_javascript, write_style
 
 
 class Widget(WebBase):
@@ -73,8 +73,8 @@ class Widget(WebBase):
 
     def html(self, fh):
         self._write_render(fh, '''\
-            <div class="widget widget-{self.widget_type} noselect" data-id="{self.id}" data-mtime="" data-value="{self.value}">
-              <div class="body">
+            <div class="widget widget-{self.widget_type}" data-id="{self.id}" data-mtime="" data-value="{self.value}">
+              <div> <!--  class="body" -->
                 <div class="title">{self.title}</div>
             ''', {'self': self})
 
@@ -103,11 +103,14 @@ class Widget(WebBase):
         return {}
 
     @classmethod
-    def script(cls, fh):
-        write_javascript(cls, fh)
+    def style(cls, fh):
+        write_style(cls, fh)
+        for widget_type in sorted(cls._widgets):
+            write_style(cls._widgets[widget_type], fh)
 
     @classmethod
-    def scripts(cls, fh):
+    def script(cls, fh):
+        write_javascript(cls, fh)
         for widget_type in sorted(cls._widgets):
             write_javascript(cls._widgets[widget_type], fh)
 
@@ -117,7 +120,7 @@ class Widget(WebBase):
 
     @classmethod
     def register(cls, klaas):
-        assert klaas.widget_type not in cls._widgets
+        assert klaas.widget_type not in cls._widgets, klaas.__name__
         cls._widgets[klaas.widget_type] = klaas
 
 

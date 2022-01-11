@@ -1,0 +1,65 @@
+/* Modal */
+:root {
+    --modal-z-index: 98;
+}
+
+#modal {
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--modal-overlay-bg); /* Black background with opacity */
+    z-index: var(--modal-z-index)
+}
+
+#modal .modal-close {
+    float: right;
+}
+
+#modal .modal-close:hover{
+    cursor: pointer;
+}
+
+#modal > div {
+    position: relative;
+    padding: 2px;
+    margin: 2px;
+    max-width: 450px;
+    color: var(--modal-font-color);
+    background-color: var(--modal-dialog-bg);
+    border-radius: 0.25rem;
+}
+
+#modal > div > div {
+    position: relative;
+    padding: 15px;
+    margin: 15px;
+}
+
+#modal .modal-message {
+    font-size: 2em;
+}
+
+#modal .modal-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+#modal .modal-buttons > div {
+    position: relative;
+    font-size: 2.5em;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+#modal .modal-buttons button {
+    width: 100%;
+}
+

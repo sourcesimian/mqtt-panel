@@ -1,0 +1,106 @@
+:root {
+    /* Font colors */
+    --font-color: #aaa;
+    --font-color-disable: #606060;
+    --font-color-secondary: #888;
+    --link-color: #ddd;
+    --link-color-active: #fff;
+    --modal-font-color: #fff;
+
+    /* Background colors */
+    --body-bg: #272b30;
+
+    --app-bg: #1f2124;
+    --group-bg: #272b30;
+
+    --titlebar-bg: #3a3f44;
+    --alert-bg: #f89406;
+
+    --widget-bg: #32383e;
+    --widget-bg-disable: #232628;
+
+    --menubar-bg: #3a3f44;
+    --menubar-bg-hover: #3e444c;
+    --menubar-bg-active: #232628;
+
+    --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+    --modal-dialog-bg: #272b30;
+
+    --menubar-overlay-bg: rgba(0, 0, 0, 0.3);
+
+    --gauge-meter-bg: #444;
+
+    /* Dimensions */
+    --widget-min-height: 65px;
+    --widget-min-width: 100px;
+
+}
+
+html {
+    font-family: sans-serif;
+    line-height: 1.15;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--font-color);
+    text-align: left;
+    background-color: var(--body-bg);
+}
+
+html, body {
+    max-width: 100% !important;
+    min-height: 100%;
+    overflow-x: hidden !important;
+}
+
+#app {
+    position: fixed;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 2px;
+    overflow-y: scroll;
+    overflow-x: hidden !important;
+    background-color: var(--app-bg);
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    background-color: transparent;
+}
+
+a:hover {
+    color: var(--link-color-active);
+}
+
+.d-none {
+    display: none !important;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
+.box {
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+}

@@ -10,6 +10,7 @@ class Switch(Widget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.default = Default
 
         self._value_map = {}
         for idx, blob in enumerate(self._c['values']):
@@ -25,7 +26,7 @@ class Switch(Widget):
             logging.warning('No topic configured for "%s"', self.name)
 
     def _on_mqtt(self, payload, _timestamp):
-        logging.debug("{%s} Rx MQTT: %s", self.id, payload)
+        logging.info("{%s} Rx MQTT: %s", self.id, payload)
         try:
             value = self._value_map[payload]
         except KeyError:
@@ -34,9 +35,8 @@ class Switch(Widget):
         self.set_value(value)
 
     def on_widget(self, blob):
-        logging.debug("{%s} Rx widget: %s", self.id, blob)
-
         payload = self._c['values'][blob['value']]['payload']
+        logging.info('{%s} Publish "%s" %s', self.id, self._c['publish'], payload)
         self._mqtt.publish(self._c['publish'], payload,
                            retain=self._c.get('retain', False), qos=self._c.get('qos', 1))
 
@@ -66,8 +66,8 @@ class Switch(Widget):
             state = State(
                 idx,
                 text_padded,
-                blob.get('icon', Default.icon(text, payload)),
-                blob.get('color', Default.color(text, payload)),
+                blob.get('icon', self.default.icon(text, payload)),
+                blob.get('color', self.default.color(text, payload)),
                 blob.get('confirm', None),
                 next_idx,
             )
@@ -102,16 +102,19 @@ class Switch(Widget):
             if state.name == self.value:
                 ctx.show = ''
 
-            self._write_render(fh, '''\
-              <div class="value-item value-{state.name}{ctx.show}"{ctx.confirm} data-next="{state.next}">
-                <span class="material-icons"{ctx.color}>{state.icon}</span>
-                <span{ctx.color}>{state.text}</span>
-              </div>
-            ''', {'ctx': ctx, 'state': state}, indent=6)
+            self._html_write(fh, ctx, state)
 
         self._write_render(fh, '''\
             </div>
         ''', indent=4)
+
+    def _html_write(self, fh, ctx, state):
+        self._write_render(fh, '''\
+            <div class="value-item value-{state.name}{ctx.show}"{ctx.confirm} data-next="{state.next}">
+                <span class="material-icons"{ctx.color}>{state.icon}</span>
+                <span{ctx.color}>{state.text}</span>
+            </div>
+        ''', {'ctx': ctx, 'state': state}, indent=6)
 
 
 class Default:

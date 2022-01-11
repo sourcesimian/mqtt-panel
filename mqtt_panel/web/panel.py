@@ -24,7 +24,7 @@ class Panel(Component):
         return self._c.get('icon', 'dashboard')
 
     def _body(self, fh):
-        fh.write(f'<div class="panel box d-none" data-title="{self.title}" data-id="panel-{self.name}">')
+        fh.write(f'<div class="panel box d-none noselect" data-title="{self.title}" data-id="panel-{self.name}">\n')
         for group in self._groups:
             group.html(fh)
             fh.write('\n')

@@ -1,4 +1,4 @@
-Display some text, an icon and color in when the defined payloads are received from the subscribed topic.
+Display some text, an icon and color when the defined payloads are received from the subscribed topic.
 ```
     - title: <string>       # Title text
       type: light           # Widget type

@@ -1,0 +1,115 @@
+.widget {
+    display: inline-block;
+    flex-basis: 90px;
+    flex-grow: 1;
+    position: relative;
+    vertical-align: top;
+    min-height: var(--widget-min-height);
+    min-width: var(--widget-min-width);
+    background-color: var(--widget-bg);
+    margin: 2px;
+    padding: 1px;
+    overflow: hidden;
+    border-radius: 0.25rem;
+}
+
+.widget .title {
+    white-space: nowrap;
+    /* text-overflow: clip; *//* ellipsis; */
+}
+
+.widget-disable,.widget-press {
+    color: var(--font-color-disable) !important;
+    background-color: var(--widget-bg-disable);
+    cursor: not-allowed;
+}
+
+.last-update {
+    position: absolute;
+    bottom: 0;
+    right: 0.5em;
+    font-size: 9px;
+    color: var(--font-color-secondary);
+}
+
+.widget-text {
+    max-width: 240px;
+}
+
+.widget-text .text {
+    overflow: hidden;
+    margin-left: 3px;
+}
+
+.widget-light {
+    max-width: 120px;
+}
+
+.widget-light .value {
+    margin-left: 3px;
+}
+
+.widget-button {
+    max-width: 120px;
+}
+
+.widget-button .value {
+    margin-left: 3px;
+}
+
+.widget-switch {
+    max-width: 120px;
+}
+
+.widget-switch .value {
+    margin-left: 3px;
+}
+
+.widget-switch,.widget-button {
+    max-height: 90px;
+}
+
+.widget-switch:hover {
+    cursor: pointer;
+}
+
+.widget-button:hover {
+    cursor: pointer;
+}
+
+.widget-select:hover {
+    cursor: pointer;
+}
+
+.widget-slider:hover {
+    cursor: pointer;
+}
+
+
+
+/* Widget - select */
+.widget-select {
+    /* min-width: 90px; */
+    max-width: 120px;
+}
+
+.widget-select .value {
+    margin-left: 3px;
+}
+
+/* Widget - image */
+.widget-image .image {
+    overflow: hidden;
+    max-width: 99vw;
+}
+
+/* Widget - dropdown */
+/*
+.widget-dropdown {
+    max-width: 180px;
+}
+
+.widget-dropdown .value {
+    margin-left: 3px;
+}
+*/

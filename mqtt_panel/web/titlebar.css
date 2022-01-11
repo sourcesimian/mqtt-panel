@@ -1,0 +1,36 @@
+:root {
+    --titlebar-z-index: 94;
+    --titlebar-height: 45px;
+}
+
+.titlebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: var(--titlebar-height);
+    width: 100vw;
+    z-index: var(--titlebar-z-index);
+    overflow: hidden;
+    background-color: var(--titlebar-bg);
+    opacity: 1;
+}
+
+.titlebar-icon {
+    position: absolute;
+    top: 0;
+    width: calc(var(--titlebar-height) - 2px);
+    height: calc(var(--titlebar-height) - 2px);
+    padding-left: 3px;
+}
+
+.titlebar-toggle-menubar {
+    font-size: calc(var(--titlebar-height) - 2px);
+    float: right !important;
+    padding-right: 3px;
+}
+
+.titlebar-title {
+    font-size: 2em;
+    padding-left: var(--titlebar-height);
+}
+

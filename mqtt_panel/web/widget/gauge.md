@@ -3,9 +3,11 @@ Show the received value and a vertical bar gauge where the text, icon and color 
     - title: <string>       # Title text
       type: gauge           # Widget type
       subscribe: <topic>    # MQTT topic to listen on
-      icon: <icon>          # optional: The default icon
+      text: <string>        # optional: The default text when not given with range
+      color: <color>        # optional: The default color when not given with range
+      icon: <icon>          # optional: The default icon when not given with range
       ranges:                       
-      - range: [<float>, <float>] # Value for start and end of range
+      - range: [<int>, <int>] # Value for start and end of range
         text: <string>        # optional: Text shown when value in range
         color: <color>        # optional: Color shown when value in range
         icon: <icon>          # optional: Icon shown when value in range
@@ -15,22 +17,28 @@ Show the received value and a vertical bar gauge where the text, icon and color 
 
 Example:
 ```
-    - title: Health
+    - title: Sound
       type: gauge
-      subscribe: gauge/health
-      icon: health_and_safety
+      subscribe: example/volume
       ranges:
-      - range: [0, 20]
-        text: Poor
-        color: red
-        icon: warning
-      - range: [20, 50]
-        text: Moderate
-        color: orange
-      - range: [50, 80]
-        text: Good
-        color: yellow
-      - range: [80, 100]
-        text: Excellent
-        color: green
+      - range: [0, 10]
+        text: "Quiet"
+        icon: volume_off
+        color: "#00c000"
+      - range: [10, 30]
+        text: "Gentle"
+        icon: volume_mute
+        color: "#02b002"
+      - range: [30, 70]
+        text: "Medium"
+        icon: volume_down
+        color: "#82b002"
+      - range: [70, 90]
+        text: "Noisy"
+        icon: volume_up
+        color: "#b08a02"
+      - range: [90, 100]
+        text: "Loud"
+        icon: volume_up
+        color: "#b03c02"
 ```

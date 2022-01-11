@@ -1,6 +1,13 @@
 MQTT Panel :: Changelog
 ===
 
+# v0.0.3
+Added:
+* Slider widget
+* Iframe widget refresh interval
+
+Changed:
+* Select widget uses modal display
 # v0.0.2
 
 Added:

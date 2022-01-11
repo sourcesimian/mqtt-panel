@@ -6,13 +6,15 @@ from mqtt_panel.web.titlebar import TitleBar
 from mqtt_panel.web.screenoverlay import ScreenOverlay
 from mqtt_panel.web.modal import Modal
 from mqtt_panel.web.wslink import WSLink
-from mqtt_panel.web.webbase import WebBase
+from mqtt_panel.web.group import Group
+from mqtt_panel.web.panel import Panel
 from mqtt_panel.web.panels import Panels
 from mqtt_panel.web.widget.widget import Widget
 from mqtt_panel.util import write_javascript, write_html, write_style
+from mqtt_panel.web.component import Component
 
 
-class App(WebBase):
+class App(Component):
     def __init__(self):
         super().__init__({})
 
@@ -45,6 +47,7 @@ class App(WebBase):
     def login(self, fh):
         with self._in_html(fh):
             with self._in_head(fh):
+                self.style(fh)
                 self._titlebar.head(fh)
                 self._screen_overlay.head(fh)
                 write_style(self.__class__, fh, indent=0, context='login')
@@ -66,34 +69,35 @@ class App(WebBase):
     def html(self, fh):
         with self._in_html(fh):
             with self._in_head(fh):
+                self.style(fh)
                 for component in self._components:
                     component.head(fh)
+                Panel.style(fh)
+                Group.style(fh)
+                Widget.style(fh)
 
             with self._in_body(fh):
                 for component in self._components:
                     component.body(fh)
 
+                fh.write('<!-- App -->\n')
                 fh.write(f'<div id="app" data-identity="{self.identity}">\n')
                 fh.write('<div style="height:var(--titlebar-height)"><!-- pad for titlebar --></div>\n\n')
                 self._panels.body(fh)
                 fh.write('</div>\n')
 
-                self._write_script(fh)
+                for component in self._components:
+                    component.script(fh)
 
-    def _write_script(self, fh):
-        for component in self._components:
-            component.script(fh)
+                self._panels.script(fh)
+                Widget.script(fh)
 
-        self._panels.script(fh)
-        Widget.script(fh)
-        Widget.scripts(fh)
+                # Late JS includes
+                self._write_dedent(fh, '''\
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+                ''')
 
-        # Late JS includes
-        self._write_dedent(fh, '''\
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
-        ''')
-
-        write_javascript(self.__class__, fh)
+                write_javascript(self.__class__, fh)
 
     @contextmanager
     def _in_html(self, fh):

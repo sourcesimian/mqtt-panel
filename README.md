@@ -9,7 +9,7 @@ This project provides a self hostable service that connects to a MQTT broker and
 - [Installation](#installation)
   - [Docker](#docker)
   - [Kubernetes](#kubernetes)
-  - [MQTT Broker](#mqtt-broker)
+  - [MQTT Infrastructure](#mqtt-infrastructure)
 - [Configuration](#configuration)
   - [MQTT](#mqtt)
     - [MQTT - Basic Auth](#mqtt---basic-auth)
@@ -25,6 +25,7 @@ This project provides a self hostable service that connects to a MQTT broker and
     - [Button](#button)
     - [Switch](#switch)
     - [Gauge](#gauge)
+    - [Slider](#slider)
     - [Select](#select)
     - [Iframe](#iframe)
 - [Contribution](#contribution)
@@ -45,6 +46,7 @@ and browse to http://localhost:8080 which will appear as:
 
 # Installation
 Prebuilt container images are available on [Docker Hub](https://hub.docker.com/r/sourcesimian/mqtt-panel).
+
 ## Docker
 Run
 ```
@@ -98,8 +100,16 @@ kubectl -n "$NAMESPACE" create configmap mqtt-panel-config \
 kubectl -n "$NAMESPACE" rollout restart deploy mqtt-panel
 ```
 
-## MQTT Broker
-An installation of **mqtt-panel** will need a MQTT broker to connect to. There are many possibilities available. [Eclipse Mosquitto](https://github.com/eclipse/mosquitto/blob/master/README.md) is a great self hosted option with many installation options including prebuilt containers on [Docker Hub](https://hub.docker.com/_/eclipse-mosquitto). In the demo [EMQ X](https://www.emqx.io/), a free Open-Source, Cloud-Native broker, is used.
+## MQTT Infrastructure
+An installation of **mqtt-panel** will need a MQTT broker to connect to. There are many possibilities available. [Eclipse Mosquitto](https://github.com/eclipse/mosquitto/blob/master/README.md) is a great self hosted option with many ways of installation including pre-built containers on [Docker Hub](https://hub.docker.com/_/eclipse-mosquitto). In the demo [EMQ X](https://www.emqx.io/), a free Open-Source, Cloud-Native broker, is used.
+
+To compliment your MQTT infrastructure you may consider the following other microservices:
+| Service | Description |
+|---|---|
+| [mqtt-gpio](https://github.com/sourcesimian/mqtt-gpio/blob/main/README.md) | Connects MQTT topics to GPIO pins. |
+| [mqtt-ical](https://github.com/sourcesimian/mqtt-ical/blob/main/README.md) | Publishes values to MQTT topics based on events in an iCal Calendar. |
+| [mqtt-kube](https://github.com/sourcesimian/mqtt-kube/blob/main/README.md) | Maps Kubernetes object values to and from topics on MQTT. |
+| [NodeRED](https://nodered.org/) | A flow-based visual programming tool for wiring together devices, with built in MQTT integration and many others available. Can easily be used to add higher level behaviours. |
 
 # Configuration
 `mqtt-panel` consumes a single [YAML](https://yaml.org/) file. To start off you can copy [config-basic.yaml](./config-basic.yaml)
@@ -115,12 +125,14 @@ mqtt:
     type: <type>                # Auth type: none|basic|mtls, default: none
     ... (<type> specific options)
 ```
+
 ### MQTT - Basic Auth
 ```
     type: basic
-    username: <string>          # optional: MQTT broker username
-    password: <string>          # optional: MQTT broker password
+    username: <string>          # MQTT broker username
+    password: <string>          # MQTT broker password
 ```
+
 ### MQTT - mTLS Auth
 ```
     type: mtls
@@ -131,13 +143,16 @@ mqtt:
     protocols:
       - <string>                # optional: list of ALPN protocols to add to the SSL connection
 ```
+
 ## Web Server
 ```
 http:
   bind: <bind>                  # optional: Interface on which web server will listen, default 0.0.0.0
   port: <port>                  # Port on which web server will listen, default 8080
   max-connections: <integer>    # optional: Limit the number of concurrent connections, default 100
+  logging-level: <level>        # optional: Select logging level of HTTP requests, default: INFO
 ```
+
 ## User Auth
 ```
 auth:                           # User Auth
@@ -166,7 +181,6 @@ panels:
       - <identifier>            # e.g. "group_one"
   ... (repeat)
 ```
-
 
 ## Groups
 A group is a boxed collection of widgets. They can be reused on multiple panels.
@@ -200,7 +214,6 @@ To reuse a widget add the `ref` attribute, and then add the widget to other grou
     - ref: <widget reference>  # Identifier of widget to reuse
 ```
 
-
 ### Text
 <!-- include:begin mqtt_panel/web/widget/text.md -->
 Simply display the payload of the subscribed MQTT topic.
@@ -217,10 +230,10 @@ Example:
       subscribe: text/content
       color: "#123456"
 ```
-<!-- include:end --> 
+<!-- include:end -->
 ### Light
 <!-- include:begin mqtt_panel/web/widget/light.md -->
-Display some text, an icon and color in when the defined payloads are received from the subscribed topic.
+Display some text, an icon and color when the defined payloads are received from the subscribed topic.
 ```
     - title: <string>       # Title text
       type: light           # Widget type
@@ -248,7 +261,7 @@ Example:
         color: yellow
         icon: light
 ```
-<!-- include:end --> 
+<!-- include:end -->
 ### Button
 <!-- include:begin mqtt_panel/web/widget/button.md -->
 Publish a constant value to a MQTT topic.
@@ -267,7 +280,7 @@ Example:
       publish: button/command
       payload: PRESSED
 ```
-<!-- include:end --> 
+<!-- include:end -->
 
 ### Switch
 <!-- include:begin mqtt_panel/web/widget/switch.md -->
@@ -297,7 +310,8 @@ Example:
       - text: "On"
         payload: "true"
 ```
-<!-- include:end --> 
+<!-- include:end -->
+
 ### Gauge
 <!-- include:begin mqtt_panel/web/widget/gauge.md -->
 Show the received value and a vertical bar gauge where the text, icon and color will change based on the value of the subscribed payload.
@@ -305,9 +319,11 @@ Show the received value and a vertical bar gauge where the text, icon and color 
     - title: <string>       # Title text
       type: gauge           # Widget type
       subscribe: <topic>    # MQTT topic to listen on
-      icon: <icon>          # optional: The default icon
+      text: <string>        # optional: The default text when not given with range
+      color: <color>        # optional: The default color when not given with range
+      icon: <icon>          # optional: The default icon when not given with range
       ranges:                       
-      - range: [<float>, <float>] # Value for start and end of range
+      - range: [<int>, <int>] # Value for start and end of range
         text: <string>        # optional: Text shown when value in range
         color: <color>        # optional: Color shown when value in range
         icon: <icon>          # optional: Icon shown when value in range
@@ -317,29 +333,49 @@ Show the received value and a vertical bar gauge where the text, icon and color 
 
 Example:
 ```
-    - title: Health
+    - title: Sound
       type: gauge
-      subscribe: gauge/health
-      icon: health_and_safety
+      subscribe: example/volume
       ranges:
-      - range: [0, 20]
-        text: Poor
-        color: red
-        icon: warning
-      - range: [20, 50]
-        text: Moderate
-        color: orange
-      - range: [50, 80]
-        text: Good
-        color: yellow
-      - range: [80, 100]
-        text: Excellent
-        color: green
+      - range: [0, 10]
+        text: "Quiet"
+        icon: volume_off
+        color: "#00c000"
+      - range: [10, 30]
+        text: "Gentle"
+        icon: volume_mute
+        color: "#02b002"
+      - range: [30, 70]
+        text: "Medium"
+        icon: volume_down
+        color: "#82b002"
+      - range: [70, 90]
+        text: "Noisy"
+        icon: volume_up
+        color: "#b08a02"
+      - range: [90, 100]
+        text: "Loud"
+        icon: volume_up
+        color: "#b03c02"
 ```
-<!-- include:end --> 
+<!-- include:end -->
+
+### Slider
+<!-- include:begin mqtt_panel/web/widget/slider.md -->
+Show the received value and a vertical bar gauge where the text, icon and color will change based on the value of the subscribed payload. Additionally when tapped, show a slider which can be used to input and publish a value between the max and min value.
+
+```
+    - title: <string>       # Title text
+      type: slider          # Widget type
+      live: [False | True]  # optional: Realtime publishing. Default: False
+      ... (same as gauge)
+```
+Setting `live: True` the current value of the slider will be published as it changes. The default behaviour is to publish only the final selected value when the slider is released.
+<!-- include:end -->
+
 ### Select
 <!-- include:begin mqtt_panel/web/widget/select.md -->
-Display a `<select>` box from which you can publish a list of values. Will update to matched payloads if subscribed to a topic.
+Display some text, an icon and color when the defined payloads are received from the subscribed topic. When tapped, shows a list of the other values which can be published.
 ```
     - title: <string>       # Title text
       type: select          # Widget type
@@ -347,7 +383,9 @@ Display a `<select>` box from which you can publish a list of values. Will updat
       subscribe: <topic>    # optional: MQTT topic to listen on
       values:
       - payload: <string>     # Payload to send and match
-        text: <string>        # Text shown in select
+        text: <string>        # optional: Text shown
+        icon: <icon>          # optional: Icon shown
+        color: <color>        # optional: Color of icon and text
       ... (repeat)
 ```
 
@@ -360,10 +398,15 @@ Example:
       values:
       - text: "Venice"
         payload: "Gondola"
+        icon: rowing
+        color: cyan
       - text: "Cape Town"
         payload: "Mountain"
+        icon: landscape
+        color: green
 ```
-<!-- include:end --> 
+<!-- include:end -->
+
 ### Iframe
 <!-- include:begin mqtt_panel/web/widget/iframe.md -->
 Display content in a `<iframe>`. The `src` attribute can be bound to a MQTT topic.
@@ -371,6 +414,7 @@ Display content in a `<iframe>`. The `src` attribute can be bound to a MQTT topi
     - title: <string>       # Title text
       type: iframe          # Widget type
       subscribe: <topic>    # optional: MQTT topic to listen on, bound to iframe 'src'
+      refresh: <seconds>    # optional: Interval at which to refresh the iframe
       attr:                 # Attributes to be set on the iframe
         src: <url>            # optional: Can be set as a default vaule for 'src'
         ...                   # additional attributes
@@ -389,10 +433,10 @@ Example:
         allow: accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture
         allowfullscreen:
 ```
-<!-- include:end --> 
+<!-- include:end -->
 
 # Contribution
-Yes sure! And please. I built mqtt-panel because I couldn't find a "I'm not ready to commit to full blown HA yet" solution that was self hosted and server side configurable. I don't know much about contemporary HTML, CSS and Typescript so I will gladly accept advice from those who know more. I want it to be a project that is quick and easy to get up and running, and helps open up MQTT to anyone.
+Yes sure! And please. I built mqtt-panel because I couldn't find a "I'm not ready to commit to full blown HA yet" solution that was self hosted and server side configurable. I don't know much about contemporary HTML, CSS and Typescript so I will gladly accept advice from those who know more. I want it to be a project that is quick and easy to get up and running, and helps open up MQTT to anyone. [CHANGELOG.md](./CHANGELOG.md)
 
 Before pushing a PR please consider adding unit tests and ensure that `make check` and `make test` are clean.
 
@@ -412,5 +456,4 @@ mqtt-panel ./config-demo.yaml
 ```
 
 # License
-
 In the spirit of the Hackers of the [Tech Model Railroad Club](https://en.wikipedia.org/wiki/Tech_Model_Railroad_Club) from the [Massachusetts Institute of Technology](https://en.wikipedia.org/wiki/Massachusetts_Institute_of_Technology), who gave us all so very much to play with. The license is [MIT](LICENSE).

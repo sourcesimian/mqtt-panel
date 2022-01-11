@@ -18,7 +18,7 @@ class Light(Widget):
         self._mqtt.subscribe(self._c['subscribe'], self._on_mqtt)
 
     def _on_mqtt(self, payload, _timestamp):
-        logging.debug("Light [%s] on_mqtt: %s", self.id, payload)
+        logging.info("{%s} Rx MQTT: %s", self.id, payload)
         try:
             value = self._payload_map[payload]['payload']
         except KeyError:
@@ -59,10 +59,10 @@ class Light(Widget):
             ctx.display = ' d-none'
 
         self._write_render(fh, '''\
-              <div class="value-item value-null{ctx.display}">
-                <span class="material-icons">do_not_disturb</span>
-                <span>unknown</span>
-              </div>
+                <div class="value-item value-null{ctx.display}">
+                    <span class="material-icons">do_not_disturb</span>
+                    <span>unknown</span>
+                </div>
             </div>
         ''', {'ctx': ctx}, indent=4)
 

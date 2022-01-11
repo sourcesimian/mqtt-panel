@@ -2,7 +2,7 @@ $(function() {
     $('.widget-switch').on('update', function(event, blob) {
         $(this).data('mtime', blob.mtime);
         $(this).data('value', blob.value);
-        
+
         $(this).find('.value-item').addClass('d-none');
         $(this).find('.value-' + blob.value).removeClass('d-none');
 
@@ -20,8 +20,9 @@ $(function() {
         var value = $(this).data('value');
         value = $(this).find('.value-' + value).data('next');
         if (value === undefined) {
-            $(this).removeClass('widget-press');
-            $(this).find('*').removeClass('widget-press');
+            $(this).trigger('release');
+            // $(this).removeClass('widget-press');
+            // $(this).find('*').removeClass('widget-press');
             return;
         }
 
@@ -37,14 +38,12 @@ $(function() {
 
         var confirm = $(this).find('.value-' + value).data('confirm');
         if (confirm) {
-            var decline = function () {
-                $(This).trigger('release');
-            };
-    
             $('#modal').trigger('confirm', [{
                 message: confirm,
                 proceed: send,
-                decline: decline,
+                cancel: function () {
+                    $(This).trigger('release');
+                },
                 timeout: 7000,
             }]);
         } else {

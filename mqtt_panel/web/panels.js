@@ -8,9 +8,10 @@ $('.panel').on('show', function(event) {
     }).get();
 
     $('#app').trigger('register-widgets', [widgetIds]);
-        
 });
+
 $('.panel').on('hide', function(event) {
     $(this).addClass('d-none');
     $(this).removeClass('panel-active');
+    $(this).find('.widget').trigger('disable');
 });

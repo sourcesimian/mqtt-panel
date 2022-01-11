@@ -7,8 +7,12 @@ class Component(WebBase):
         super().__init__(blob or {})
         self._indent = indent
 
+    @classmethod
+    def style(cls, fh):
+        write_style(cls, fh)
+
     def head(self, fh):
-        write_style(self.__class__, fh)
+        self.style(fh)
         if hasattr(self, '_head'):
             indent = ' ' * self._indent
             fh.write(f'{indent}<!-- {self.__class__.__name__} -->\n')

@@ -42,7 +42,7 @@ class Session:
     def username(self):
         try:
             return self._session['username']
-        except KeyError:
+        except (KeyError, TypeError):
             return None
 
     def login(self, username, password):

@@ -1,0 +1,17 @@
+.group {
+    flex-grow: 1;
+    position: relative;
+    max-width: 576px;
+    vertical-align: top;
+    margin: 2px;
+    background-color: var(--group-bg);
+    border-radius: 0.25rem;
+}
+
+.group .title {
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 1em;
+    font-weight: bold;
+    width: 100%;
+}

@@ -12,7 +12,7 @@ class TitleBar(Component):
 
     def _body(self, fh):
         self._write_render(fh, '''\
-        <div class="titlebar">
+        <div class="titlebar noselect">
           <img class="titlebar-icon" src="icon-192x192.png"/>
           <span class="titlebar-title">MQTT Panel</span>
           <span class="titlebar-toggle-menubar material-icons">menu</span>

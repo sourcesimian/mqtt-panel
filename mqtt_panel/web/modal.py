@@ -7,5 +7,5 @@ class Modal(Component):
 
     def _body(self, fh):
         self._write_render(fh, '''\
-            <div id="modal" class="d-none"></div>
+            <div id="modal" class="d-none" noselect></div>
         ''', indent=self._indent)

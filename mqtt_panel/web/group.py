@@ -1,10 +1,10 @@
 from itertools import count
 from mqtt_panel.util import blob_hash
 
-from mqtt_panel.web.webbase import WebBase
+from mqtt_panel.web.component import Component
 
 
-class Group(WebBase):
+class Group(Component):
     def __init__(self, blob):
         super().__init__(blob)
 
@@ -28,7 +28,7 @@ class Group(WebBase):
 
     def html(self, fh):
         fh.write(f'<div class="group"><!-- {self.name} -->\n')
-        fh.write(f'<div class="title">{self.title}</div>\n')
+        fh.write(f'<div class="title noselect">{self.title}</div>\n')
         fh.write('<div class="box">\n')
         for widget in self._widgets:
             fh.write(f'<!-- widget: {self.name} : {widget.name} [{widget.id}] -->\n')

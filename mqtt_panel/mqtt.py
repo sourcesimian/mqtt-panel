@@ -9,7 +9,7 @@ import gevent
 
 
 class Mqtt:
-    def __init__(self, **config):
+    def __init__(self, config):
         self._subscribe_map = {}
         self._c = config
         self._topic_prefix = self._c.get('topic-prefix', None) or ''
@@ -161,7 +161,10 @@ class Mqtt:
             return
         topic = self._topic(topic)
         logging.debug("Publish %s: %s", topic, payload)
-        self._client.publish(topic, payload=payload, qos=qos, retain=retain)
+        try:
+            self._client.publish(topic, payload=payload, qos=qos, retain=retain)
+        except TypeError as ex:
+            logging.error('%s Value "%s" is a %s', ex, payload, type(payload))
 
 
 class TopicMatcher:

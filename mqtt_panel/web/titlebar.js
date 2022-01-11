@@ -9,4 +9,4 @@ class TitleBar {
     title(str) {
         $('.titlebar-title').html(str);
     }
-};
+}

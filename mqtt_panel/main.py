@@ -1,5 +1,6 @@
-import sys
+import importlib.metadata
 import logging
+import sys
 
 import gevent
 import gevent.monkey
@@ -13,7 +14,6 @@ import mqtt_panel.config                                    # noqa: E402 pylint:
 import mqtt_panel.mqtt                                      # noqa: E402 pylint: disable=C0413,C0412
 import mqtt_panel.server                                    # noqa: E402 pylint: disable=C0413,C0412
 
-
 from mqtt_panel.cache import Cache                          # noqa: E402 pylint: disable=C0413,C0412
 from mqtt_panel.web.widget.widgets import register_widgets  # noqa: E402 pylint: disable=C0413,C0412
 
@@ -26,6 +26,9 @@ logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 
 
 def cli():
+    meta = dict(importlib.metadata.metadata('mqtt_panel'))
+    logging.info('Running mqtt-panel v%s', meta['Version'])
+
     config_file = 'config.yaml' if len(sys.argv) < 2 else sys.argv[1]
     config = mqtt_panel.config.Config(config_file)
 
@@ -33,7 +36,7 @@ def cli():
 
     cache = Cache(**config.cache)
 
-    mqtt = mqtt_panel.mqtt.Mqtt(**config.mqtt)
+    mqtt = mqtt_panel.mqtt.Mqtt(config.mqtt)
 
     binding = mqtt_panel.binding.Binding(cache, mqtt, config.groups, config.panels)
 
