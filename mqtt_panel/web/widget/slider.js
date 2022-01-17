@@ -13,7 +13,7 @@ $(function() {
     $('.widget-slider').click(function() {
         if ($(this).data('enable') == false) { return; }
 
-        if ($(this).data('pressed') == true) {
+        if ($(this).data('pending') == true) {
             $(this).trigger('release');
             return;
         }
@@ -43,6 +43,7 @@ $(function() {
             timeout: null,
             change: change,
             done: function (value) {
+                $(This).data('pending', true);
                 if (This.live_value != value) {
                     $('#app').trigger('widget', {
                         id: $(This).data('id'),
@@ -62,17 +63,8 @@ $(function() {
         });
     })
 
-    $('.widget-slider').mousedown(function() {
-        if ($(this).data('enable') == false) { return; }
-
-        $(this).addClass('widget-press');
-        $(this).find('*').addClass('widget-press');
-    });
-
-    $('.widget-slider').on('release', function() {
-        $(this).removeClass('widget-press');
-        $(this).find('*').removeClass('widget-press');
-        $(this).data('pressed', false);
+    $('.widget-slider').each(function() {
+        widget_clickable(this);
     });
 });
 

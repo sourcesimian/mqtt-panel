@@ -11,6 +11,7 @@ This project provides a self hostable service that connects to a MQTT broker and
   - [Kubernetes](#kubernetes)
   - [MQTT Infrastructure](#mqtt-infrastructure)
 - [Configuration](#configuration)
+  - [Conventions](#conventions)
   - [MQTT](#mqtt)
     - [MQTT - Basic Auth](#mqtt---basic-auth)
     - [MQTT - mTLS Auth](#mqtt---mtls-auth)
@@ -101,7 +102,7 @@ kubectl -n "$NAMESPACE" rollout restart deploy mqtt-panel
 ```
 
 ## MQTT Infrastructure
-An installation of **mqtt-panel** will need a MQTT broker to connect to. There are many possibilities available. [Eclipse Mosquitto](https://github.com/eclipse/mosquitto/blob/master/README.md) is a great self hosted option with many ways of installation including pre-built containers on [Docker Hub](https://hub.docker.com/_/eclipse-mosquitto). In the demo [EMQ X](https://www.emqx.io/), a free Open-Source, Cloud-Native broker, is used.
+An installation of **mqtt-panel** will need a MQTT broker to connect to. There are many possibilities available. In the demo [EMQ X](https://www.emqx.io/), a free Open-Source, Cloud-Native broker, is used. YOu can subscribe to `sourcesimian/mqtt-panel/demo/#` with your favourite MQTT viewer. [Eclipse Mosquitto](https://github.com/eclipse/mosquitto/blob/master/README.md) is a great self-hosted option with many ways of installation including pre-built containers on [Docker Hub](https://hub.docker.com/_/eclipse-mosquitto).
 
 To compliment your MQTT infrastructure you may consider the following other microservices:
 | Service | Description |
@@ -113,6 +114,17 @@ To compliment your MQTT infrastructure you may consider the following other micr
 
 # Configuration
 `mqtt-panel` consumes a single [YAML](https://yaml.org/) file. To start off you can copy [config-basic.yaml](./config-basic.yaml)
+
+## Conventions
+The following are conventions that are used in the YAML configuration:
+| Item | Description |
+|---|---|
+| `<string>` | Any string of characters, preferably "quoted" to avoid YAML from interpreting in a different way. |
+| `<icon>` | These are `material-icons` from the [Google Fonts](https://fonts.google.com/icons) library. |
+| `<color>` | Is any HTML style color, e.g. `red`, `"#F04040"`, `rgb(240, 64, 64)`, etc. Use "quotes" to ensure that the `#` is not interpreted as a comment.|
+| `<topic>` | A MQTT topic, e.g. `fizz/buzz/status`. Subscriptions can also accept the `*` and `#` wildcards. Use "quotes" to ensure that the `#` is not interpreted as a comment.
+| `<identifier>` | A string of alpha-numeric characters, and `_` |
+
 
 ## MQTT
 ```
@@ -176,7 +188,7 @@ logging:                        # Logging settings
 ```
 panels:
   - title: <string>             # Panel title text
-    icon: widgets               # Icon shown on the menu bar
+    icon: <icon>                # Icon shown on the menu bar
     groups:                     # list of group identifiers
       - <identifier>            # e.g. "group_one"
   ... (repeat)
@@ -207,7 +219,7 @@ All widgets have the following common attributes.:
 ```
 `retain` is a flag that is set when publishing a payload to MQTT. If set the message will persist in the broker, clients will re-receive that payload when reconnecting. This does not always give the desired behaviour.
 
-You will note that at startup some widgets show "unknown" until a payload on the subscribed MQTT topic is recieved. To improve user experience of mqtt-panel `cache: True` will preserve the last seen payload for a widget. This enables the server to immediately show the last known state after a restart, even with a MQTT topic using `retain: False`. 
+You will note that at startup some widgets show "unknown" until a payload on the subscribed MQTT topic is recieved. To improve user experience of mqtt-panel `cache: True` will preserve the last seen payload for a widget. This enables the server to immediately show the last known state after a restart, even with a MQTT topic using `retain: False`.
 
 To reuse a widget add the `ref` attribute, and then add the widget to other groups as:
 ```

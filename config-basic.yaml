@@ -3,7 +3,7 @@ mqtt:
   host: broker.emqx.io
   port: 1883
   client-id: mqtt-panel
-  topic-prefix: demo/mqtt-panel
+  topic-prefix: sourcesimian/mqtt-panel/demo
 
 http:
   bind: 0.0.0.0

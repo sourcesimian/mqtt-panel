@@ -1,8 +1,10 @@
 $(function() {
     $('.widget-iframe').on('update', function(event, blob) {
         $(this).data('mtime', blob.mtime);
-        let src_change = $(this).find('iframe').attr('src') != blob.src
-        $(this).find('iframe').attr('src', blob.src)
+        let src_change = $(this).find('iframe').attr('src') != blob.src;
+        if (src_change) {
+            $(this).find('iframe').attr('src', blob.src)
+        }
 
         $(this).trigger('enable');
 
@@ -17,10 +19,14 @@ $(function() {
         let refresh = parseInt($(iframe).data('refresh'));
 
         if (refresh) {
+            let This = this;
             this.interval = setInterval(function() {
                 $(iframe).attr('src', function(_, val) {
                     return val;
                 });
+                let now = Date.now()/1000;
+                $(This).data('mtime', now);
+                widget_update_last_update(This, now);
             }, refresh * 1000);
         }
     });

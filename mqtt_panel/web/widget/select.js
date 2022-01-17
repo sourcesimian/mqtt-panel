@@ -1,3 +1,61 @@
+$(function() {
+    $('.widget-select').on('update', function(event, blob) {
+        $(this).data('mtime', blob.mtime);
+        $(this).data('value', blob.value);
+
+        $(this).find('.value-item').addClass('d-none');
+        $(this).find('.value-' + blob.value).removeClass('d-none');
+
+        $(this).trigger('enable');
+        $(this).trigger('release');
+    });
+
+    $('.widget-select').click(function() {
+        if ($(this).data('enable') == false) { return; }
+
+        if ($(this).data('pending') == true) {
+            $(this).trigger('release');
+            return;
+        }
+
+        let This = this;
+
+        let buttons = [];
+        $(this).find('.value-item').map(function() {
+            let name = $(this).data('name');
+            if  (name != null) {
+                let button = {
+                    icon: $(this).data('icon'),
+                    color: $(this).data('color'),
+                    text: $(this).data('text'),
+                    confirm: $(this).data('confirm'),
+                    click: function() {
+                        $(This).data('pending', true);
+                        $('#app').trigger('widget', {
+                            id: $(This).data('id'),
+                            value: name,
+                        });
+                    },
+                };
+                buttons.push(button);
+            }
+        });
+
+        widget_select_modal({
+            message: $(this).find('.title').text(),
+            timeout: null,
+            cancel: function () {
+                $(This).trigger('release');
+            },
+            buttons: buttons,
+        });
+    })
+
+    $('.widget-select').each(function() {
+        widget_clickable(this);
+    });
+});
+
 function widget_select_modal(blob) {
     let window = $('<div></div>')
     let close = $('<span class="modal-close material-icons">close</span>');
@@ -58,72 +116,3 @@ function widget_select_modal(blob) {
 
     $('#modal').trigger('show', [window, blob.cancel, blob.timeout]);
 }
-
-$(function() {
-    $('.widget-select').on('update', function(event, blob) {
-        $(this).data('mtime', blob.mtime);
-        $(this).data('value', blob.value);
-
-        $(this).find('.value-item').addClass('d-none');
-        $(this).find('.value-' + blob.value).removeClass('d-none');
-
-        $(this).trigger('enable');
-        $(this).trigger('release');
-    });
-
-    $('.widget-select').click(function() {
-        if ($(this).data('enable') == false) { return; }
-
-        if ($(this).data('pressed') == true) {
-            $(this).trigger('release');
-            return;
-        }
-
-        let This = this;
-
-        let buttons = [];
-        $(this).find('.value-item').map(function() {
-            let name = $(this).data('name');
-            if  (name != null) {
-                let button = {
-                    icon: $(this).data('icon'),
-                    color: $(this).data('color'),
-                    text: $(this).data('text'),
-                    confirm: $(this).data('confirm'),
-                    click: function() {
-                        $('#app').trigger('widget', {
-                            id: $(This).data('id'),
-                            value: name,
-                        });
-                        $(This).data('pressed', true);
-                        $(This).addClass('widget-press');
-                        $(This).find('*').addClass('widget-press');
-                    },
-                };
-                buttons.push(button);
-            }
-        });
-
-        widget_select_modal({
-            message: $(this).find('.title').text(),
-            timeout: null,
-            cancel: function () {
-                $(This).trigger('release');
-            },
-            buttons: buttons,
-        });
-    })
-
-    $('.widget-select').mousedown(function() {
-        if ($(this).data('enable') == false) { return; }
-
-        $(this).addClass('widget-press');
-        $(this).find('*').addClass('widget-press');
-    });
-
-    $('.widget-select').on('release', function() {
-        $(this).removeClass('widget-press');
-        $(this).find('*').removeClass('widget-press');
-        $(this).data('pressed', false);
-    });
-});

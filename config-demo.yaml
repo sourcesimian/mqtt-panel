@@ -2,7 +2,11 @@ mqtt:
   host: broker.emqx.io
   port: 1883
   client-id: mqtt-panel-demo
-  topic-prefix: demo/mqtt-panel
+  topic-prefix: sourcesimian/mqtt-panel/demo
+  # auth:
+  #   type: basic
+  #   username: "user"
+  #   password: "password"
 
 http:
   bind: 0.0.0.0
@@ -460,7 +464,7 @@ groups:
         icon: videocam
         color: green
       - text: "Other"
-        payload: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+        payload: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
         icon: videocam
         confirm: "Select Other?"
       qos: 1
@@ -470,7 +474,7 @@ groups:
     - title: Iframe
       type: iframe
       subscribe: example/camera
-      refresh: 30
+      refresh: 300
       attr:
         src:
         width: 320px
