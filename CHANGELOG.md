@@ -4,6 +4,7 @@ MQTT Panel :: Changelog
 # v0.0.4
 Fixed:
 * MQTT basic auth
+
 # v0.0.3
 Added:
 * Slider widget

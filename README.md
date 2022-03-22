@@ -17,7 +17,8 @@ This project provides a self hostable service that connects to a MQTT broker and
     - [MQTT - mTLS Auth](#mqtt---mtls-auth)
   - [Web Server](#web-server)
   - [User Auth](#user-auth)
-  - [Cache and Logging](#cache-and-logging)
+  - [Cache](#cache)
+  - [Logging](#logging)
   - [Panels](#panels)
   - [Groups](#groups)
   - [Widgets](#widgets)
@@ -102,7 +103,7 @@ kubectl -n "$NAMESPACE" rollout restart deploy mqtt-panel
 ```
 
 ## MQTT Infrastructure
-An installation of **mqtt-panel** will need a MQTT broker to connect to. There are many possibilities available. In the demo [EMQ X](https://www.emqx.io/), a free Open-Source, Cloud-Native broker, is used. YOu can subscribe to `sourcesimian/mqtt-panel/demo/#` with your favourite MQTT viewer. [Eclipse Mosquitto](https://github.com/eclipse/mosquitto/blob/master/README.md) is a great self-hosted option with many ways of installation including pre-built containers on [Docker Hub](https://hub.docker.com/_/eclipse-mosquitto).
+An installation of **mqtt-panel** will need a MQTT broker to connect to. There are many possibilities available. In the demo [EMQ X](https://www.emqx.io/), a free Open-Source, Cloud-Native broker, is used. You can subscribe to `sourcesimian/mqtt-panel/demo/#` with your favourite MQTT viewer. [Eclipse Mosquitto](https://github.com/eclipse/mosquitto/blob/master/README.md) is a great self-hosted option with many ways of installation including pre-built containers on [Docker Hub](https://hub.docker.com/_/eclipse-mosquitto).
 
 To compliment your MQTT infrastructure you may consider the following other microservices:
 | Service | Description |
@@ -173,13 +174,15 @@ auth:                           # User Auth
     password: <string>
 ```
 
-## Cache and Logging
+## Cache
 ```
 cache:                          # Configure cache
   root: <path>                  # optional root path, default ./cache
 ```
+
+## Logging
 ```
-logging:                        # Logging settings
+logging:
   level: INFO                   # optional: Logging level, default DEBUG
 ```
 
