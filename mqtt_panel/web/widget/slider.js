@@ -45,10 +45,25 @@ $(function() {
             done: function (value) {
                 $(This).data('pending', true);
                 if (This.live_value != value) {
-                    $('#app').trigger('widget', {
-                        id: $(This).data('id'),
-                        value: value,
-                    });
+                    var send = function(){
+                        $('#app').trigger('widget', {
+                            id: $(This).data('id'),
+                            value: value,
+                        });
+                    }
+                    var confirm = $(This).find('.value').data('confirm');
+                    if (confirm) {
+                        $('#modal').trigger('confirm', [{
+                            message: confirm,
+                            proceed: send,
+                            cancel: function () {
+                                $(This).trigger('release');
+                            },
+                            timeout: 7000,
+                        }]);
+                    } else {
+                        send();
+                    }
                 }
                 This.live_value = null;
             },

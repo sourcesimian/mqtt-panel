@@ -93,7 +93,7 @@ class Gauge(Widget):
     def _html(self, fh):
         current = self._current()
 
-        data = ' '.join([f"data-{k}='{v}'" for k, v in self._data().items()])
+        data = ' '.join([f"data-{k}='{v}'" for k, v in self._data().items() if v is not None])
 
         self._write_render(fh, '''\
             <span class="material-icons">{current.icon}</span>

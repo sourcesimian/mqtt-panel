@@ -42,7 +42,10 @@ class Binding:
             self._mqtt.watch_online(self._service.set_mqtt_online)
 
             for group_name in panel_blob['groups']:
-                panel.add_group(self._groups[group_name])
+                try:
+                    panel.add_group(self._groups[group_name])
+                except KeyError:
+                    logging.error('Group not found: %s', group_name)
 
             self._app.add_panel(panel)
             self._app.add_menu('panel-' + panel.name, panel.title, panel.icon)

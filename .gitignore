@@ -5,3 +5,4 @@ data
 .vscode/
 **/.DS_Store
 reports/
+.direnv/

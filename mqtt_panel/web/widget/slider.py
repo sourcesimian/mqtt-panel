@@ -16,4 +16,5 @@ class Slider(Gauge):
     def _data(self):
         data = super()._data()
         data['live'] = self._c.get('live', False)
+        data['confirm'] = self._c.get('confirm')
         return data

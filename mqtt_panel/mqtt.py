@@ -10,19 +10,83 @@ import gevent
 
 class Mqtt:
     def __init__(self, config):
+        self._watchers = []
+        self._sessions = {}
+        self._default_session = None
+        for item in self._gen_config(config):
+            name = item.get("name", None)
+
+            session = MqttSession(item)
+            session.watch_online(self._notify_watchers)  # TODO: un-hack
+            self._sessions[name] = session
+
+            if not self._default_session:
+                self._default_session = session
+
+    def _gen_config(self, config):
+        if isinstance(config, list):
+            for item in config:
+                yield item
+        else:
+            yield config
+
+    def watch_online(self, on_change):
+        self._watchers.append(on_change)
+
+    def _notify_watchers(self, _online):
+        online = all([session.online for session in self._sessions.values()])
+
+        for watcher in self._watchers:
+            gevent.spawn(watcher, online)
+
+    def run(self):
+        ret = []
+        for session in self._sessions.values():
+            ret.append(gevent.spawn(session._run_loop))
+        return ret
+
+    def close(self):
+        for session in self._sessions.values():
+            session.close()
+
+    def _get_session_topic(self, topic):
+        prefix, _ = topic.split('/', 1)
+        if ':' in prefix:
+            name, _ = prefix.split(':', 1)
+            return self._sessions[name], topic[len(name) + 1:]
+        return self._default_session, topic
+
+    def subscribe(self, topic, on_payload):
+        try:
+            session, topic = self._get_session_topic(topic)
+            session.subscribe(topic, on_payload)
+        except KeyError as ex:
+            logging.warning('Ignoring subscription for unknown MQTT session "%s"', ex.args[0])
+
+    def publish(self, topic, payload, retain=False, qos=0):
+        try:
+            session, topic = self._get_session_topic(topic)
+            session.publish(topic, payload, retain, qos)
+        except KeyError as ex:
+            logging.warning('Ignoring publish for unknown MQTT session "%s"', ex.args[0])
+
+class MqttSession:
+    def __init__(self, config):
         self._subscribe_map = {}
         self._c = config
         self._topic_prefix = self._c.get('topic-prefix', None) or ''
         self._watchers = []
         self._client = None
         self.connect_timestamp = None
+        self.online = False
 
     def watch_online(self, on_change):
         self._watchers.append(on_change)
 
     def _notify_watchers(self, online):
+        self.online = online
         for watcher in self._watchers:
-            gevent.spawn(watcher, online)
+            watcher(online)
 
     def open(self):
         logging.info("Open (%s)", self._topic_prefix)
@@ -102,12 +166,15 @@ class Mqtt:
 
     def _run_loop(self):
         while True:
-            try:
-                self.open()
-                self._client.loop_forever()
-            except Exception as ex:     # pylint: disable=W0703
-                logging.error('Run loop exception %s: %s', ex.__class__.__name__, ex)
-                gevent.sleep(10)
+            self._loop()
+
+    def _loop(self):
+        try:
+            self.open()
+            self._client.loop_forever()
+        except Exception as ex:     # pylint: disable=W0703
+            logging.error('Run loop exception %s: %s', ex.__class__.__name__, ex)
+            gevent.sleep(10)
 
     def close(self):
         logging.info("Close")

@@ -1,3 +1,5 @@
+from cmath import log
+import logging
 import re
 
 import textwrap
@@ -13,7 +15,7 @@ class WebBase:
     @property
     def name(self):
         try:
-            return self._c.get('name').replace(' ', '-').lower()
+            return self._c.get('name')
         except (KeyError, AttributeError):
             return self.title.replace(' ', '-').lower()
 

@@ -50,7 +50,7 @@ def cli():
     mqtt_loop = mqtt.run()
 
     try:
-        gevent.joinall((mqtt_loop,))
+        gevent.joinall(mqtt_loop)
     except KeyboardInterrupt:
         server.close()
         mqtt.close()

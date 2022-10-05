@@ -29,6 +29,7 @@
     --menubar-overlay-bg: rgba(0, 0, 0, 0.3);
 
     --gauge-meter-bg: #444;
+    --slider-meter-bg: #444;
 
     /* Dimensions */
     --widget-min-height: 65px;

@@ -31,7 +31,7 @@ class Config:
 
         self._hash = hashlib.md5(str(random.random()).encode('utf-8')).hexdigest()
 
-        self._d['mqtt']['client-id'] += f'-{self._hash[8:]}'
+        # self._d['mqtt']['client-id'] += f'-{self._hash[8:]}'
 
     @property
     def log_level(self):
