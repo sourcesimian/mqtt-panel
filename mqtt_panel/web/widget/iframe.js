@@ -36,5 +36,7 @@ $(function() {
             clearInterval(this.interval);
             this.interval = null;
         }
+        let iframe = $(this).find('iframe');
+        $(iframe).attr('src', '');
     });
 });
