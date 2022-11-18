@@ -70,6 +70,7 @@ class Switch(Widget):
                 blob.get('color', self.default.color(text, payload)),
                 blob.get('confirm', None),
                 next_idx,
+                'true' if blob.get('read-only', False) else 'false',
             )
             yield state
 
@@ -80,6 +81,7 @@ class Switch(Widget):
             None,
             None,
             0,
+            True,
         )
         yield none_state
 
@@ -142,4 +144,4 @@ class Default:
         return cls._lookup(*key)[1]
 
 
-State = collections.namedtuple('State', ['name', 'text', 'icon', 'color', 'confirm', 'next'])
+State = collections.namedtuple('State', ['name', 'text', 'icon', 'color', 'confirm', 'next', 'ro'])

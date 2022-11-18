@@ -13,7 +13,7 @@ class Select(Switch):
         if state.color:
             color = f' data-color="{state.color}"'
         self._write_render(fh, '''\
-            <div class="value-item value-{state.name}{ctx.show}"{ctx.confirm}{color} data-icon="{state.icon}" data-text="{state.text}" data-name="{state.name}">
+            <div class="value-item value-{state.name}{ctx.show}"{ctx.confirm}{color} data-icon="{state.icon}" data-text="{state.text}" data-name="{state.name}" data-ro="{state.ro}">
                 <span class="material-icons"{ctx.color}>{state.icon}</span>
                 <span{ctx.color}>{state.text}</span>
             </div>

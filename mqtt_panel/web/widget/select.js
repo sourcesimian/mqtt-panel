@@ -23,7 +23,8 @@ $(function() {
         let buttons = [];
         $(this).find('.value-item').map(function() {
             let name = $(this).data('name');
-            if  (name != null) {
+            let ro = $(this).data('ro');
+            if  (name != null && ro == false) {
                 let button = {
                     icon: $(this).data('icon'),
                     color: $(this).data('color'),
