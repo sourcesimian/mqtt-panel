@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+import os
 import urllib
 
 import gevent.pool
@@ -12,6 +13,29 @@ from geventwebsocket.handler import WebSocketHandler
 
 from mqtt_panel.session import Session
 
+
+ext_map = {
+    'jquery.js': {
+        'Content-Type': "application/javascript",
+        'url': "https://code.jquery.com/jquery-1.11.1.min.js"
+    },
+    'jquery.mobile.js': {
+        'Content-Type': "application/javascript",
+        'url': "https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"
+    },
+    'bootstrap.css': {
+        'Content-Type': "text/css",
+        'url': "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+    },
+    'material-icons.css': {
+        'Content-Type': "text/css",
+        'url': "https://fonts.googleapis.com/icon?family=Material+Icons"
+    },
+    'material-icons.ttf': {
+        'Content-Type': "font/ttf",
+        'url': "https://fonts.gstatic.com/s/materialicons/v139/flUhRq6tzZclQEJ-Vdg-IuiaDsNZ.ttf"
+    },
+}
 
 class Server:
     def __init__(self, binding, config, auth):
@@ -139,6 +163,20 @@ class Server:
             start_response('200 OK', [('Content-Type', 'application/json')])
             with open('./resources/manifest.json', encoding="utf8") as fh:
                 return [fh.read().encode()]
+
+        if path[0] == 'ext':
+            if path[1] in ext_map:
+                start_response('200 OK', [('Content-Type', ext_map[path[1]]['Content-Type'])])
+                if not os.path.exists('./ext'):
+                    os.makedirs('./ext')
+                local_file = './ext/%s' % path[1]
+                if not os.path.exists(local_file):
+                    import requests
+                    with open(local_file, mode="wb") as fh:
+                        fh.write(requests.get(ext_map[path[1]]['url']).content)
+
+                with open(local_file, mode="rb") as fh:
+                    return [fh.read()]
 
         start_response('404 Not Found', [('Content-Type', 'text/html')])
         return [b'<h1>Not Found</h1>']

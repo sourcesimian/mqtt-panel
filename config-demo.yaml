@@ -27,6 +27,7 @@ cache:
 
 panels:
   - title: Example
+    name: example
     icon: home
     groups:
     - example_mood
@@ -39,6 +40,7 @@ panels:
     - example_image
 
   - title: Widgets
+    name: widgets
     icon: widgets
     groups:
       - widget_button_text
