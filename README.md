@@ -3,6 +3,10 @@ MQTT Panel <!-- omit in toc -->
 
 ***Self hosted Web App panel for MQTT***
 
+> This project is currently maintained and remains suitable for standalone MQTT web panels.
+> 
+> For users of Node-RED FlowFuse Dashboard 2, see [**node-red-contrib-dashboard-2-switchboard**](https://github.com/sourcesimian/node-red-contrib-dashboard-2-switchboard), which brings a similar YAML-configurable button panel experience directly into Node-RED.
+
 This project provides a self hostable service that connects to a MQTT broker and serves a progressive web app panel which is fully configurable via YAML. It aims to be a simple panel that gives user interactivity with MQTT topics. Suitable for standalone or MQTT microservice deployments, and can be deployed alongside home automation solutions. It does not offer higher level capabilities such as automations, integrations or scheduling.
 
 - [Demo](#demo)
